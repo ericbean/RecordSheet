@@ -192,14 +192,14 @@ def get_pending_posts(limit=None, offset=0):
                 .limit(limit).offset(offset).all()
 
 
-def pending_posts_count(session):
+def pending_posts_count():
     """Get the number of un-posted rows in pending_posts."""
     ses = _session()
     return ses.query(func.count(pendingPost.posted))\
                 .filter(pendingPost.posted == False).scalar()
 
 
-def new_pending_posts(session, transactions):
+def new_pending_posts(transactions):
     ses = _session()
     fitids = set([r[0] for r in ses.query(pendingPost.fitid)])
     dup = []
