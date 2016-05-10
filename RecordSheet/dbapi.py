@@ -56,27 +56,32 @@ def init(connect_str=DB_CONNECT_STR):
 
 
 def Session():
+    """Create a SQLAlchemy session."""
     return _session()
 
 ###############################################################################
 
 def get_accounts(limit=None, offset=0):
+    """Get accounts"""
     ses = _session()
     return ses.query(Account).order_by(Account.name)\
             .limit(limit).offset(offset).all()
 
 
 def get_account(account_id):
+    """Get account by account id"""
     ses = _session()
     return ses.query(Account).get(account_id)
 
 
 def get_account_by_name(name):
+    """Get account by name"""
     ses = _session()
     return ses.query(Account).filter(Account.name==name).one()
 
 
 def new_account(name, desc):
+    """Create new account with name and desc"""
     acct = None
     try:
         acct = Account(name=name, desc=desc)
@@ -93,27 +98,32 @@ def new_account(name, desc):
 ###############################################################################
 
 def get_batch(id):
+    """Get batch id"""
     ses = _session()
     return ses.query(Batch).get(id)
 
 def new_batch(username):
+    """Creat new batch with username"""
     return Batch(user=username)
 
 ###############################################################################
 
 def get_journals(limit=None, offset=0):
+    """Get journal entries"""
     ses = _session()
     return ses.query(Journal).order_by(desc(Journal.datetime))\
         .limit(limit).offset(offset).all()
 
 
 def get_journal(id):
+    """Get journal with id"""
     ses = _session()
     return ses.query(Journal).get(id)
 
 ###############################################################################
 
 def posts(account_id):
+    """Get posts from accounts with account id"""
     ses = _session()
     return ses.query(Posting).filter(Posting.account_id==account_id)\
                 .join(Journal).order_by(Journal.datetime)
@@ -121,6 +131,7 @@ def posts(account_id):
 ###############################################################################
 
 def new_transaction(batch, posts=None, datetime=None, memo=None):
+    """Create new transaction"""
     ses = _session()
     closed = ses.query(Account.id).filter(Account.closed==True)
     closed = set(r[0] for r in closed)
@@ -181,6 +192,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 ###############################################################################
 
 def get_pending_posts(limit=None, offset=0):
+    """Get pending posts with limit and offset"""
     ses = _session()
     sortdir = asc
     if offset < 0:
@@ -200,6 +212,7 @@ def pending_posts_count():
 
 
 def new_pending_posts(transactions):
+    """Create new pending posts from list of transactions"""
     ses = _session()
     fitids = set([r[0] for r in ses.query(pendingPost.fitid)])
     dup = []
@@ -222,18 +235,21 @@ def new_pending_posts(transactions):
 ###############################################################################
 
 def get_users():
+    """Get users"""
     ses = _session()
     return ses.query(User).all()
 
 
 def get_user(id):
+    """Get user with id"""
     ses = _session()
     return ses.query(User).get(id)
 
 
 def get_user_by_username(username):
+    """Get user by username."""
     ses = _session()
-    return ses.query(User).filter(User.username == username).one()
+    return ses.query(User).filter(User.username==username).one()
 
 
 def login(username, password):
