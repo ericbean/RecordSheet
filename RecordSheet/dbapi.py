@@ -171,6 +171,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
             ses.add(post)
 
         ses.commit()
+        return journal
 
     except Exception:
         ses.rollback()

@@ -123,9 +123,9 @@ def new_transaction_json():
         # allow sending datetime as sending empty string or not at all
         data = request.json
         data['datetime'] = data.get('datetime', None) or None
-        dbapi.new_transaction(batch, **data)
+        journal = dbapi.new_transaction(batch, **data)
 
-        return {'status':200, 'errorMsg': 'success!'}
+        return {'journal_id':journal.id}
 
     except dbapi.DBException as e:
         return json_error(400, e)
