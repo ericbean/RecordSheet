@@ -77,18 +77,16 @@ def get_account_by_name(name):
 
 
 def new_account(name, desc):
-    acct = None
+    ses = _session()
     try:
         acct = Account(name=name, desc=desc)
-        ses = _session()
         ses.add(acct)
         ses.commit()
+        return acct
 
     except Exception:
         session.rollback()
-        raise
-
-    return acct
+        raise DBException("Failed to create account")
 
 ###############################################################################
 

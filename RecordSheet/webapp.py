@@ -79,17 +79,22 @@ def accounts_json_view():
 
 
 @rsapp.post('/json/accounts/new', name='new_account_json')
-def accounts_json_new():
-    name = request.json['name']
-    desc = request.json['desc']
-    acct = dbapi.new_account(name, desc, dbs)
-    if acct:
-        return acct
+def json_accounts_new():
+    try:
+        name = request.json['name']
+        desc = request.json['desc']
+        acct = dbapi.new_account(name, desc)
+        return {'acct':acct}
 
-    # if acct is none, return a 400
-    response.status = 400
-    response.content_type = 'application/json'
-    return '{"status":400, "errorMsg":"error"}'
+    except KeyError:
+        response.status = 400
+        response.content_type = 'application/json'
+        return '''{'status':400, 'errorMsg':'Missing name or desc'}'''
+
+    except DBException as e:
+        response.status = 400
+        response.content_type = 'application/json'
+        return util.jsonDumps({'status': 400, 'errorMsg': e})
 
 ###############################################################################
 
