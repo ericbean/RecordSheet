@@ -52,6 +52,18 @@ def www_session():
 
     return session
 
+def json_error(status=500, error_msg=None):
+    """Helper for returning json responses indicating errors. Sets the http
+    status and content-type headers of the response (side effects).
+    """
+    if not error_msg:
+        error_msg = 'Internal Server Error'
+    # set the http status code and content type
+    response.status = status
+    response.content_type = 'application/json'
+    # a str will bypass the autojson plugin
+    return util.jsonDumps({'errorMsg': str(error_msg)})
+
 ###############################################################################
 
 @rsapp.route('/', name='index')
@@ -87,14 +99,13 @@ def json_accounts_new():
         return {'acct':acct}
 
     except KeyError:
-        response.status = 400
-        response.content_type = 'application/json'
-        return '''{'status':400, 'errorMsg':'Missing name or desc'}'''
+        return json_error(400, 'Missing name or desc')
 
     except DBException as e:
-        response.status = 400
-        response.content_type = 'application/json'
-        return util.jsonDumps({'status': 400, 'errorMsg': e})
+        return json_error(400, e)
+
+    except Exception as e:
+        return json_error()
 
 ###############################################################################
 
@@ -112,23 +123,15 @@ def new_transaction_json():
         # allow sending datetime as sending empty string or not at all
         data = request.json
         data['datetime'] = data.get('datetime', None) or None
-
         dbapi.new_transaction(batch, **data)
 
-    # Set headers and return a json string
-    # If I let the jsonplugin handle it, a 200 status is returned
+        return {'status':200, 'errorMsg': 'success!'}
+
     except dbapi.DBException as e:
-        response.status = 400
-        response.content_type = 'application/json'
-        return util.jsonDumps({'status':400, 'errorMsg': str(e)})
+        return json_error(400, e)
 
     except Exception as e:
-        response.status = 500
-        response.content_type = 'application/json'
-        traceback.print_exc()
-        return util.jsonDumps({'status':500, 'errorMsg': str(e)})
-
-    return {'status':200, 'errorMsg': 'success!'}
+        return json_error()
 
 ###############################################################################
 
