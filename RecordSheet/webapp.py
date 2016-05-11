@@ -101,7 +101,7 @@ def json_accounts_new():
     except KeyError:
         return json_error(400, 'Missing name or desc')
 
-    except DBException as e:
+    except dbapi.DBException as e:
         return json_error(400, e)
 
     except Exception as e:
