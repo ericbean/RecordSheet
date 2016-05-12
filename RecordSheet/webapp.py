@@ -62,6 +62,8 @@ def json_error(status=500, error_msg=None):
     response.status = status
     response.content_type = 'application/json'
     # a str will bypass the autojson plugin
+    if bottle.DEBUG:
+        traceback.print_exc()
     return util.jsonDumps({'errorMsg': str(error_msg)})
 
 ###############################################################################
@@ -101,11 +103,11 @@ def json_accounts_new():
     except KeyError:
         return json_error(400, 'Missing name or desc')
 
-    except dbapi.DBException as e:
-        return json_error(400, e)
+    except dbapi.DBException as exc:
+        return json_error(400, exc)
 
-    except Exception as e:
-        return json_error()
+    except Exception as exc:
+        return json_error(500, exc)
 
 ###############################################################################
 
@@ -127,11 +129,11 @@ def new_transaction_json():
 
         return {'journal_id':journal.id}
 
-    except dbapi.DBException as e:
-        return json_error(400, e)
+    except dbapi.DBException as exc:
+        return json_error(400, exc)
 
-    except Exception as e:
-        return json_error()
+    except Exception as exc:
+        return json_error(500, exc)
 
 ###############################################################################
 
