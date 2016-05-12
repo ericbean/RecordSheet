@@ -1,0 +1,101 @@
+% rebase('base.html', title='RecordSheet')
+<section>
+    <h1>Users</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Last Login</th>
+                <th>Fail Count</th>
+                <th>Locked</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: users">
+            <tr>
+                <td data-bind="text: username"></td>
+                <td data-bind="text: name"></td>
+                <td data-bind="DateTime: last_login"></td>
+                <td data-bind="text: fail_count"></td>
+                <td data-bind="text: locked" ></td>
+                <td><a data-bind="click: $root.edit_user" href="#">Edit</a></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr><td colspan=6><a data-bind="click: $root.new_user" href="#">&plus;Add user</a></td></tr>
+        </tfoot>
+    </table>
+    <form data-bind="visible: editor_visable" class="edit-user">
+        <h3>Edit User</h3>
+        <label>Username</label>
+        <input data-bind="textInput: username"/><br/>
+        <label>Display name</label>
+        <input data-bind="textInput: name"/><br/>
+        <label>Locked</label>
+        <input data-bind="checked: locked" type="checkbox" /><br/>
+        <label>Password</label>
+        <input data-bind="textInput: password" type="password"/><br/>
+        <label>Confirm password</label>
+        <input data-bind="textInput: passwordB" type="password"/><br/>
+        <button data-bind="click: $root.save">Save</button>
+    </form>
+</section>
+<script type="text/javascript">
+//rendered server side
+initialUsers = {{!jsonDumps(users)}}
+
+var ViewModel = function() {
+    var self = this;
+    self.users = ko.observableArray(initialUsers);
+    self.editor_visable = ko.observable(false);
+    self.username = ko.observable();
+    self.name = ko.observable();
+    self.password = ko.observable();
+    self.passwordB = ko.observable();
+    self.locked = ko.observable();
+    
+    
+    self.edit_user = function(data) {
+        self.username(data.username);
+        self.name(data.name);
+        self.editor_visable(true);
+    };
+    
+    self.new_user = function() {
+        self.editor_visable(true);
+    };
+    
+    self.save = function() {
+        var o = { username:self.username(),
+                  name:self.name(),
+                  locked:self.locked(),
+                  password:self.password(),
+                  passwordB:self.passwordB()
+                }
+    
+        this.load_cb = function(event) {
+            var xhr = event.currentTarget;
+            var jsonData = JSON.parse(xhr.response)
+            if (xhr.status === 200) {
+                console.log('success')
+            }
+        };
+
+        this.error_cb = function(event) {
+            console.log("xhr error");
+            console.log(event);
+        };
+
+        var oReq = new XMLHttpRequest();
+        oReq.open("POST", '/json/user/new');
+        oReq.addEventListener("load", self.load_cb);
+        oReq.addEventListener("error", self.error_cb);
+        oReq.setRequestHeader("Accept", 'application/json');
+        oReq.setRequestHeader("Content-Type", 'application/json');
+        oReq.send(cleanJson(o));
+    };
+}
+
+var vm = new ViewModel()
+ko.applyBindings(vm);
+</script>

@@ -1,0 +1,29 @@
+% rebase('base.html', title='RecordSheet')
+% import datetime
+<link href="/static/reports.css" rel="stylesheet" />
+% year = datetime.date.today().year
+<section>
+    <form class="pl-form" action="profit_and_loss/pl?">
+        <h2>Profit and Loss Report</h2>
+        <label>Entity<br/>
+            <select value="{{year}}" name="entity"/>
+            % for acct in entities:
+                <option>{{acct.name}}</option>
+            % end
+            </select>
+        </label>
+        <label>Period<br/>
+            <select value="{{year}}" name="period"/>
+            % for i in range(year, year-10, -1):
+                <option value="{{i}}">{{i}}</option>
+            % end
+            </select>
+        </label>
+        <button>Run</button>
+        <datalist id=periods>
+        % for i in range(2014, year):
+            <option value="{{i}}"/>
+        % end
+        </datalist>
+    </form>
+</section>

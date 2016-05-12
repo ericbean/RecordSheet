@@ -1,0 +1,37 @@
+% rebase('base.html', title='Account Chart')
+% import decimal
+<section>
+<h1>Account Chart</h1>
+<table class="acchart">
+    <thead>
+        <tr><th>Account</th><th>Description</th></tr>
+    </thead>
+    <tbody data-bind="foreach: accounts">
+        <tr>
+            <td ><a data-bind="text: name, attr:{href:'/accounts/'+id}"></td>
+            <td data-bind="text: desc"></td>
+        </tr>
+    </tbody>
+</table>
+<create-acct params="callback:onNewAccount"></create-acct>
+</section>
+<script type='text/javascript'>
+function MyViewModel() {
+    var self = this;
+    self.accounts = ko.observableArray();
+    self.onNewAccount = function(acct) {
+        var accounts = self.accounts();
+        for (var i = 0; i < accounts.length; i++) {
+            if (accounts[i].name > acct.name) {
+                self.accounts.splice(i, 0, acct);
+                return;
+            }
+        }
+        self.accounts.push(acct);
+    }
+    getAccounts(function(data) {self.accounts.push(...data)});
+}
+
+
+ko.applyBindings(new MyViewModel());
+</script>

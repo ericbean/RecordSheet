@@ -1,0 +1,13 @@
+% rebase('base.html', title='New Transaction')
+<section>
+<create-tr params="posts:posts, dateEditible:true"></create-tr>
+</section>
+<script type='text/javascript'>
+var ViewModel = function() {
+    var self = this;
+    self.posts = ko.observableArray([new Post({}), new Post({})]);
+    getAccounts(function(data) {})
+}
+
+ko.applyBindings(new ViewModel());
+</script>

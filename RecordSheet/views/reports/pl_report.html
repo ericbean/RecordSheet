@@ -1,0 +1,42 @@
+% rebase('base.html', title='RecordSheet')
+%fmt_name = lambda s: s.split(':')[-1]
+<link href="/static/reports.css" rel="stylesheet" />
+<section>
+    <h1>{{entity}}</h1>
+    <h2>Profit and Loss {{period[0].year}}</h2>
+    <table class="pl">
+        <thead>
+            <tr><td colspan="2">Income</td></tr>
+        </thead>
+        <tbody>
+        % for exp in income:
+            <tr><td>{{fmt_name(exp.name)}}</td><td>{{exp.acct_bal}}</td></tr>
+        % end
+        </tbody>
+        <tfoot>
+        % if income:
+            <tr><td colspan="2">{{sum(e.acct_bal for e in income)}}</td></tr>
+        % else:
+            <tr><td>No Income</td></tr>
+        % end
+
+        </tfoot>
+    </table>
+    <table class="pl">
+        <thead>
+            <tr><td colspan="2">Expenses</td></tr>
+        </thead>
+        <tbody>
+        % for exp in expenses:
+            <tr><td>{{fmt_name(exp.name)}}</td><td>{{exp.acct_bal}}</td></tr>
+        % end
+        </tbody>
+        <tfoot>
+        % if expenses:
+            <tr><td colspan="2">{{sum(e.acct_bal for e in expenses)}}</td></tr>
+        % else:
+            <tr><td>No Expenses</td></tr>
+        % end
+        </tfoot>
+    </table>
+</section>

@@ -1,0 +1,47 @@
+% import datetime
+% from RecordSheet import __version__
+% ses = www_session()
+% sep = "-" if title else ""
+% nav = get('nav', True)
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ses['csrf-token']}}">
+    <title>RecordSheet{{sep}}{{title}}</title>
+    <link href="/static/base.css" rel="stylesheet" />
+    <link href="/static/print.css" rel="stylesheet" media="print" />
+    <script type='text/javascript' src='/static/lib/knockout-3.3.0.js'></script>
+    <script type='text/javascript' src='/static/rs/main.js'></script>
+</head>
+<body>
+<header>
+    <a href="{{url('index')}}"><h1>RecordSheet</h1></a>
+% if nav:
+% if 'batch' in ses and ses['batch'].id:
+    <span class="batchinfo">
+        <a href="{{url('batch_view', id=ses['batch'].id)}}">Batch ID: {{ses['batch'].id}}</a>
+    </span>
+% end
+    <span class="logout"><a href="{{url('logout')}}">logout</a></span>
+    <nav>
+        <span><a href="{{url('account_chart')}}">Accounts</a></span>
+        <span><a href="{{url('new_transaction')}}">New Transaction</a></span>
+        <span><a href="{{url('import_tr')}}">Import Data</a></span>
+        <span><a href="{{url('report_list')}}">Reports</a></span>
+    % if 'user' in ses:
+        <span><a href="{{url('user_self_edit')}}">Settings</a></span>
+    % end
+    </nav>
+% end
+</header>
+<main>
+{{!base}}
+</main>
+<footer>
+    <span>RecordSheet {{__version__}}</span>
+    <span>Generated {{datetime.datetime.now()}}</span>
+</footer>
+</body>
+</html>
