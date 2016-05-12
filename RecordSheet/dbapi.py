@@ -26,7 +26,7 @@ from RecordSheet.dbmodel import (Account, Batch, Journal, Posting, pendingPost,
 
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 ###############################################################################
 
@@ -79,14 +79,28 @@ def get_account_by_name(name):
 def new_account(name, desc):
     ses = _session()
     try:
+        if len(name) == 0:
+            raise DBException("Account name can not be empty")
+
+        elif name is None:
+            raise DBException("Account name can not be None")
+
         acct = Account(name=name, desc=desc)
         ses.add(acct)
         ses.commit()
         return acct
 
+    except IntegrityError as exc:
+        ses.rollback()
+        raise DBException("Account already exists") from exc
+
+    except SQLAlchemyError:
+        ses.rollback()
+        raise DBException("Failed to create account") from exc
+
     except Exception:
-        session.rollback()
-        raise DBException("Failed to create account")
+        ses.rollback()
+        raise
 
 ###############################################################################
 
