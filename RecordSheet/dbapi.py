@@ -144,7 +144,6 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 
         # balance test
         if sum([Decimal(p['amount']) for p in posts]):
-            print("sum=", sum([Decimal(p['amount']) for p in posts]))
             raise DBException("Journal entry must sum to zero")
 
         # test for empty memo

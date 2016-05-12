@@ -59,7 +59,6 @@ class Posting(Base, JsonMixin):
 
     @property
     def fmt_amount(self):
-        print(type(self.amount))
         return "{:.2f}".format(self.amount)
 
 ###############################################################################
