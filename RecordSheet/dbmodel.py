@@ -202,7 +202,7 @@ class User(Base):
 @event.listens_for(Posting, 'before_insert')
 def posting_insert_listener(mapper, connection, target):
     target.seq = connection.scalar("SELECT (COALESCE(MAX(seq), 0) + 1) "
-                                   "as max_seq FROM posting WHERE "
+                                   "as max_seq FROM posts WHERE "
                                    "account_id={}".format(target.account_id))
 
 
