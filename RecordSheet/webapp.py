@@ -78,7 +78,7 @@ def index():
 @rsapp.route('/accounts', name='account_chart')
 @view('account_chart')
 def account_chart():
-    return {'accounts': dbapi.get_accounts()}
+    return {}
 
 
 @rsapp.route('/accounts/<id:int>', name='account_view')
