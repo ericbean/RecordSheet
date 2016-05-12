@@ -1,5 +1,5 @@
 # RecordSheet
-Double entry accounting application for your intranet.
+Double entry accounting application for small business.
 
 ## Synopsis
 
@@ -8,14 +8,28 @@ easily.
 
 ## Featues
 
- - Double entry bookkeeping
- - Imports data from OFX files
- - Generates reports
- - Multiple users
+- Double entry bookkeeping
+- Import data from OFX files
+- Generate reports
+- Multiple users
+- Web based
 
 ## Installation
 
-Run `setup.py`
+### Prerequisites
+
+- python 3.4
+- Beaker 1.8.0
+- bcrypt 2.0.0
+- bottle 0.12.9
+- gevent 1.1.1
+- SQLAlchemy 1.0
+
+### Installing
+
+`python3 -m pip install -r requirements.txt`
+
+`python3 setup.py install`
 
 ## Contributing
 
@@ -27,9 +41,9 @@ Run `setup.py`
 
 ## Credits
 
-Eric Beanland
-Marcia Reardon
+- Eric Beanland
+- Marcia Reardon
 
 ## License
 
-Released under the GNU Public License 3.0
+Released under the GNU General Public License 3.0
