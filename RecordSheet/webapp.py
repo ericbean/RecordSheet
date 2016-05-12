@@ -278,7 +278,7 @@ def login_post():
 
         elif success == 'SUCCESS':
             ws['authenticated'] = True
-            ws['user_id'] = user
+            ws['user_id'] = user.id
             # send user back to their orginal request or /
             redirect(ws.get('dest_path', '/'))
 
