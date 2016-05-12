@@ -121,7 +121,7 @@ def new_transaction():
 def new_transaction_json():
     try:
         ws = www_session()
-        batch = ws.setdefault('batch', dbapi.new_batch(ws['username']))
+        batch = ws.setdefault('batch', dbapi.new_batch(ws['user_id']))
         # allow sending datetime as sending empty string or not at all
         data = request.json
         data['datetime'] = data.get('datetime', None) or None

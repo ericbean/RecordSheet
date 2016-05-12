@@ -108,8 +108,8 @@ def get_batch(id):
     ses = _session()
     return ses.query(Batch).get(id)
 
-def new_batch(username):
-    return Batch(user=username)
+def new_batch(user_id):
+    return Batch(user_id=user_id)
 
 ###############################################################################
 
