@@ -151,24 +151,25 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
         if not memo or memo == "":
             raise DBException("Journal memo field must not be empty")
 
+        _posts = []
         for p in posts:
-            # while we're at it, convert account names (if they exist) to
-            # account_ids
-            if 'account' in p:
-                acct = get_account_by_name(session, p['account'])
+            if 'account_id' in p:
+                acct = ses.query(Account).get(p['account_id'])
+
+            elif 'account' in p:
+                acct = ses.query(Account).filter(Account.name==p['account']) \
+                        .one()
+
                 p['account_id'] = acct.id
 
-            if not p['account_id']:
-                raise DBException("Post account_id must exist.")
-
-            acc = ses.query(Account).get(p['account_id'])
+            else:
+                raise DBException("Post must contain account id or name")
 
             # test for closed accounts
-            if acc.closed:
+            if acct.closed:
                 raise DBException("Can not post to a closed account")
 
-        journal = Journal(datetime=datetime, memo=memo, batch=batch)
-        for p in posts:
+            # check for a related pending object and copy fields from it
             if 'id' in p and p['id']:
                 pend = ses.query(pendingPost).get(p['id'])
                 post = pend.to_post()
@@ -176,10 +177,20 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
                 if p['memo']:
                     post.memo = p['memo']
 
+                _posts.append(post)
+
             else:
                 post = Posting(account_id=p['account_id'], amount=p['amount'],
                                memo=(p['memo'] or memo))
 
+                _posts.append(post)
+
+        # create the actual posts and add them to the session
+        # this is done seperately because a query after objects have been
+        # added to the session will trigger a flush. Not world ending, but
+        # it causes gaps in the PKEY sequence, which annoy me.
+        journal = Journal(datetime=datetime, memo=memo, batch=batch)
+        for post in _posts:
             post.batch = batch
             post.journal = journal
             ses.add(post)
