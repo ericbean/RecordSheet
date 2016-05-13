@@ -18,16 +18,20 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import fnmatch
 import os
 
 ###############################################################################
 
 class auth_middleware:
     """Redirect non-authenticated clients to  a login url"""
-    def __init__(self, app, login_url='/login', static_url='/static'):
+    def __init__(self, app, login_url='/login', whitelist=None):
         self.app = app
         self.login_url = login_url
-        self.static_url = static_url
+        if whitelist:
+            self.whitelist = whitelist
+        else:
+            self.whitelist = ['/favicon.ico', '/static/*', '/login', '/logout']
 
 
     def __call__(self, environ, start_response):
@@ -35,13 +39,10 @@ class auth_middleware:
         authed = session.get('authenticated', False)
         path = environ['PATH_INFO']
         # prevent clever /static/../ type paths
-        path != os.path.normpath(path)
-        islogin = (path == self.login_url)
-        prefix = os.path.commonprefix([environ['PATH_INFO'], self.static_url])
-        isstatic = (prefix == self.static_url)
+        path = os.path.normpath(path)
 
         # call app
-        if (authed or islogin or isstatic):
+        if authed or any(fnmatch.fnmatch(path, p) for p in self.whitelist):
             return self.app(environ, start_response)
 
         dest = environ['PATH_INFO']
