@@ -1,0 +1,11 @@
+<form class=create-acct>
+    <h2>Create Account</h2>
+    <div>
+        <div data-bind="visible: _errorMsg, text: _errorMsg" class="errorBox"></div>
+    </div>
+    <label>Account Name</label><br/>
+    <input data-bind="autoAcct: name" size="30" /><br/>
+    <label>Desc</label><br/>
+    <input data-bind="textInput: desc" size="30" />
+    <button data-bind="click: sendAcct">Add</button>
+</form>
