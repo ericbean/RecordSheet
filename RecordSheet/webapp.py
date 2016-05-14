@@ -316,7 +316,7 @@ def csrf_check():
 
 ###############################################################################
 
-def main():
+def app():
     # merge instead of mount
     rsapp.merge(reports.app)
     # setup path for views
@@ -331,7 +331,6 @@ def main():
 
     from RecordSheet.auth import auth_middleware
     from beaker.middleware import SessionMiddleware
-    import os
     authapp = auth_middleware(rsapp)
     session_opts = {'session.type': 'memory',
                     'session.auto': True,
@@ -340,9 +339,16 @@ def main():
 
     sessionapp = SessionMiddleware(authapp, session_opts)
     dbapi.init()
+    return sessionapp
+
+###############################################################################
+
+def main():
+    # import gevent and monkey patch here so only the gevent server is
+    # affected.
     from gevent import monkey
     monkey.patch_all()
-    bottle.run(app=sessionapp, server='gevent', debug=True)
+    bottle.run(app=app(), server='gevent', debug=True)
 
 ###############################################################################
 
