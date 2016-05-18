@@ -280,7 +280,7 @@ def login_post():
             ws['authenticated'] = True
             ws['user_id'] = user.id
             # send user back to their orginal request or /
-            redirect(ws.get('dest_path', '/'))
+            redirect(ws.get('dest_path', rsapp.get_url('index')))
 
         return {'msg':msg}
 
