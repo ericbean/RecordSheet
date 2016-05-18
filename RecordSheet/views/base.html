@@ -9,10 +9,10 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ses['csrf-token']}}">
-    <link href="/static/base.css" rel="stylesheet" />
-    <link href="/static/print.css" rel="stylesheet" media="print" />
-    <script type='text/javascript' src='/static/lib/knockout-3.3.0.js'></script>
-    <script type='text/javascript' src='/static/main.js'></script>
+    <link href="{{url('static', filename='base.css')}}" rel="stylesheet" />
+    <link href="{{url('static', filename='print.css')}}" rel="stylesheet" media="print" />
+    <script type='text/javascript' src="{{url('static', filename='knockout-3.3.0.js')}}"></script>
+    <script type='text/javascript' src="{{url('static', filename='main.js')}}"></script>
     <title>RecordSheet{{sep}}{{title}}</title>
 </head>
 <body>
