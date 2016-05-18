@@ -4,7 +4,7 @@
 % if defined('msg'):
 <p>{{msg}}</p>
 % end
-<form method="POST" action="/login" class="login-form">
+<form method="POST" action="{{url('login_post')}}" class="login-form">
     <label>Username</label><input name="username" required /><br/>
     <label>Password</label><input type="password" name="password" required />
     <input type="hidden" name="csrf-token" value="{{ses['csrf-token']}}" />
