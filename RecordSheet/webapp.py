@@ -262,7 +262,7 @@ def login():
     return {}
 
 
-@rsapp.post('/login')
+@rsapp.post('/login', name='login_post')
 @view('login')
 def login_post():
     ws = www_session()
