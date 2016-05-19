@@ -1,7 +1,7 @@
 % rebase('base.html', title='RecordSheet')
 % ses = www_session()
 <section>
-    <form method=POST action="/me/password">
+    <form method=POST action="{{url('me_pw')}}">
         <h3>Change password</h3>
         <label>Current password</label>
         <input type=password name=password /><br/>

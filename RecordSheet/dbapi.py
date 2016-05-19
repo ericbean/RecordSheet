@@ -20,6 +20,8 @@
 
 import datetime
 from decimal import Decimal
+import hashlib
+import os
 
 from RecordSheet.dbmodel import (Account, Batch, Journal, Posting, pendingPost,
                                     User, Base)
@@ -265,6 +267,7 @@ def login(username, password):
     try:
         user = get_user_by_username(username)
     except SQLAlchemyError:
+        ses.rollback()
         return None, 'USERPASS'
 
     user.last_attempt = datetime.datetime.utcnow()
@@ -275,7 +278,7 @@ def login(username, password):
 
         return user, 'LOCKED'
 
-    if user.authenticate(password):
+    if compare_pw(password, user.password):
         user.last_login = user.last_attempt
         user.fail_count = 0
         ses.commit()
@@ -285,12 +288,53 @@ def login(username, password):
     return user, 'USERPASS'
 
 
+def authenticate(user_id, password):
+    try:
+        ses = _session()
+        user = get_user_by_username(username)
+        return compare_pw(password, user.password)
+
+    except SQLAlchemyError:
+        ses.rollback()
+        return False
+
+
 def set_password(user_id, password):
     """Set the password for user with user_id."""
     ses = _session()
     user = ses.query(User).get(user_id)
-    user.set_password(password)
+    user.password = new_pw_hash(password)
+
     ses.commit()
+
+###############################################################################
+
+PW_MAX = 1024 # MAX password length
+SALT_LEN = 512 # size of salt in bytes
+HASH = 'sha512' # the hash
+HASH_ROUNDS = 100000 # the number of rounds to hash
+
+def new_pw_hash(plaintext):
+    # truncate the plaintext to PW_MAX
+    plaintext = plaintext[:PW_MAX]
+    if not isinstance(plaintext, bytes):
+        plaintext = plaintext.encode('utf8')
+
+    salt = os.urandom(SALT_LEN)
+    dk = hashlib.pbkdf2_hmac(HASH, plaintext, salt, HASH_ROUNDS)
+    return salt + dk
+
+
+def compare_pw(plaintext, hashed):
+    plaintext = plaintext[:PW_MAX]
+    if not isinstance(plaintext, bytes):
+            plaintext = plaintext.encode('utf8')
+
+    # extract the salt from the first bytes
+    salt = hashed[:SALT_LEN]
+    dk = hashlib.pbkdf2_hmac(HASH, plaintext, salt, HASH_ROUNDS)
+
+    return dk == hashed[SALT_LEN:]
 
 ###############################################################################
 

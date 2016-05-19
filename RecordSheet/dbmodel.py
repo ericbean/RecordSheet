@@ -19,7 +19,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import bcrypt
+
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
@@ -166,24 +166,6 @@ class User(Base):
     fail_count = Column(Integer, default=0)
     password = Column(LargeBinary, nullable=False)
     locked = Column(Boolean, default=True)
-
-    def set_password(self, password):
-        """Set a password for user without commiting the change."""
-        if not isinstance(password, bytes):
-            password = password.encode('utf8')
-
-        self.password = bcrypt.hashpw(password, bcrypt.gensalt())
-
-
-    def authenticate(self, password):
-        """Authenticate the user with password. Returns true if the password is
-        correct. Only the hashes are checked, everything else is the callers
-        problem.
-        """
-        if not isinstance(password, bytes):
-            password = password.encode('utf8')
-
-        return bcrypt.hashpw(password, self.password) == self.password
 
 
     def json_obj(self):

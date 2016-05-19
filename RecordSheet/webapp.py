@@ -211,7 +211,7 @@ def json_user_new():
 
 ###############################################################################
 
-@rsapp.route('/me', name='user_self_edit')
+@rsapp.route('/me', name='me')
 @view('user_self')
 def user_self_edit():
     ws = www_session()
@@ -220,7 +220,7 @@ def user_self_edit():
     return {'user':user}
 
 
-@rsapp.post('/me/password', name='user_change_pw')
+@rsapp.post('/me/password', name='me_pw')
 def user_self_edit():
     ws = www_session()
     pw = request.POST.get('password', None)
@@ -238,7 +238,7 @@ def user_self_edit():
     user = dbapi.get_user(ws['user_id'])
     success = user.authenticate(pw)
     if success:
-        dbapi.set_password(user, new_pw)
+        dbapi.set_password(ws['user_id'], new_pw)
         redirect('/')
 
     abort(401, "Password or username is incorrect")
