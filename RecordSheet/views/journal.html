@@ -1,0 +1,24 @@
+% rebase('base.html', title='Journal')
+<section>
+<table class="journal">
+    <thead>
+        <tr><th>Date Time</th><th>Description</th><th></th></tr>
+        <tr><th>Account</th><th></th><th>Amount</th></tr>
+    </thead>
+    <tbody>
+% for journal in journals:
+        <tr>
+            <td>{{journal.fmt_datetime}}</td>
+            <td colspan="2">{{journal.desc}}</td>
+        </tr>
+    % for post in journal.posts:
+        <tr>
+            <td><a  href="{{url('account_view', id=post.account_id)}}">{{post.account.name}}</a></td>
+            <td>{{post.memo}}</td>
+            <td {{!'class="redneg"' if post.amount < 0 else ''}}>{{post.fmt_amount}}</td>
+        </tr>
+    % end
+% end
+    </tbody>
+</table>
+</section>

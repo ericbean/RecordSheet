@@ -1,0 +1,20 @@
+% rebase('base.html', title='RecordSheet', extra_css=['reports.css'])
+% import datetime
+<section>
+<h1>Trial Balance</h1>
+<h3>{{datetime.date.today()}}</h3>
+<table class="trial-balance">
+    <thead>
+        <tr><th>Account</th><th>Balance</th></tr>
+    </thead>
+    <tbody>
+    % bal_str = "{:.2f}".format
+    % for bal in balances:
+        <tr><td>{{bal[0]}}</td><td>{{bal_str(bal[1])}}</td></tr>
+    % end
+    </tbody>
+    <tfoot>
+        <tr><td>Trial Balance</td><td>{{sum(b[1] for b in balances)}}</td></tr>
+    </tfoot>
+</table>
+</section>

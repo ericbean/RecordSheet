@@ -1,0 +1,58 @@
+% rebase('base.html', title='RecordSheet', extra_css=['reports.css'])
+%fmt_name = lambda s: s.split(':')[-1]
+% tot_income = 0
+% tot_expense = 0
+<section>
+    <h1>{{entity}}</h1>
+    <h2>Profit and Loss {{period[0].year}}</h2>
+    <table class="pl">
+        <thead>
+            <tr><td colspan="2">Income</td></tr>
+        </thead>
+        <tbody>
+        % for exp in income:
+            <tr><td>{{fmt_name(exp.name)}}</td><td>{{exp.acct_bal}}</td></tr>
+        % end
+        </tbody>
+        <tfoot>
+        % if income:
+            % tot_income = sum(e.acct_bal for e in income)
+            <tr><td colspan="2">{{tot_income}}</td></tr>
+        % else:
+            <tr><td>No Income</td></tr>
+        % end
+
+        </tfoot>
+    </table>
+    <table class="pl">
+        <thead>
+            <tr><td colspan="2">Expenses</td></tr>
+        </thead>
+        <tbody>
+        % for exp in expenses:
+            <tr><td>{{fmt_name(exp.name)}}</td><td>{{exp.acct_bal}}</td></tr>
+        % end
+        </tbody>
+        <tfoot>
+        % if expenses:
+            % tot_expense = sum(e.acct_bal for e in expenses)
+            <tr><td colspan="2">{{tot_expense}}</td></tr>
+        % else:
+            <tr><td>No Expenses</td></tr>
+        % end
+        </tfoot>
+    </table>
+    <table class="pl">
+        % total = tot_income - tot_expense
+        <thead>
+        % if total > 0:
+            <tr><td colspan="2">Total Profits</td></tr>
+        % else:
+            <tr><td colspan="2">Total Losses</td></tr>
+        % end
+        </thead>
+        <tbody>
+            <tr><td>{{abs(total)}}</td></tr>
+        </tbody>
+    </table>
+</section>

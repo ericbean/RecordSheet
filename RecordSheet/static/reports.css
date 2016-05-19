@@ -1,0 +1,38 @@
+
+table.trial-balance thead {border-bottom: 1pt solid black}
+table.trial-balance > tfoot > tr {
+    border-top: 1pt solid black;
+}
+
+table.trial-balance td:last-child {
+    text-align: right;
+}
+
+form.pl-form {
+    background: #C6CACE;
+    border-radius: 5px;
+    margin-top: 20px;
+    max-width: 700px;
+    padding: 20px;
+}
+
+form.pl-form label {
+    display: inline-block;
+}
+
+table.pl {
+    margin-bottom: 20px;
+    min-width: 300px;
+}
+
+table.pl thead {border-bottom: 1pt solid black}
+table.pl tbody td {padding-left: 2em}
+
+table.pl tfoot {
+    border-top: 1pt solid black;
+    text-align: right;
+}
+
+table.pl > tbody td:last-child {
+    text-align: right;
+}

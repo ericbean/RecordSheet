@@ -1,0 +1,44 @@
+<div class="create_tr">
+    <form>
+        <h2>Create Transaction</h2>
+        <div>
+            <!-- ko ifnot:dateEditible -->
+            <span data-bind="DateTime: datetime"></span><br/>
+            <!-- /ko -->
+            <!-- ko if:dateEditible -->
+            <label>Date</label><br/>
+            <input data-bind="DateTime: datetime" type="datetime-local" ><br/>
+            <!-- /ko -->
+            <label>Memo</label><input data-bind="textInput: memo" class="jmemo" />
+        </div>
+            <table>
+            <thead>
+                <tr>
+                    <th>Memo</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: posts">
+                <tr>
+                    <td><input data-bind="textInput: memo"/></td>
+                    <td><input data-bind="autoAcct: account" type="search"/></td>
+                    <td><input data-bind="textInput: amount" size="10"/></td>
+                    <td><a data-bind="click: $parent.removePost" class="plus" href="#">&minus;</a></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr data-bind="if: posts().length == 0">
+                    <td colspan="3">Check some transactions above to add them here.</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><a data-bind="click: addRow" class="plus" href="#">Add row</a></td>
+                </tr>
+            </tfoot>
+        </table>
+        <button data-bind="click: sendPosts">Post</button>
+        <div data-bind="visible: errorMsg, text: errorMsg" class="errorBox"></div>
+    </form>
+</div>

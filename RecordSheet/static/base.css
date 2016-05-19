@@ -1,0 +1,133 @@
+body {background: #dbdbdb;padding-bottom: 20px;}
+
+header {text-align: center}
+
+.errorBox {
+    background: #EF5858;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 3px;
+    margin: 3px;
+    color: #FFF;
+}
+
+form.create-acct label {
+    display: inline-block;
+    min-width: 40px;
+}
+
+form.create-acct {
+    background: #C6CACE;
+    border-radius: 5px;
+    margin-top: 20px;
+    max-width: 700px;
+    padding: 20px;}
+
+table {
+    font-size: 100%;
+    border-collapse:collapse;
+}
+
+table.ledger thead > tr:last-child > th {padding-left: 10px}
+table.ledger tbody > tr:nth-child(odd) {background: #C8D5B9}
+table.ledger tbody > tr:nth-child(odd) > td {padding-right: 10px}
+table.ledger tbody > tr:nth-child(even) {background: #CCDDBA}
+table.ledger tbody > tr:nth-child(even) > td {padding-left: 10px}
+table.ledger tbody td:last-child {text-align: right}
+
+
+table.journal tbody > tr:nth-child(odd) {background: #C8D5B9}
+table.journal tbody > tr:nth-child(even) {background: #CCDDBA}
+table.journal tbody td:last-child {text-align: right}
+
+table.import th {background: #80AB82}
+table.import tbody > tr:nth-child(odd) {
+    background: #C8D5B9;
+    height: 2em;
+    vertical-align: top;
+}
+
+table.import tbody > tr:nth-child(even) {background: #CCDDBA}
+table.import tbody td:last-child {text-align: right}
+table.import tfoot {text-align: center}
+
+footer {
+    font-size: small;
+    bottom: 0; 
+    position:fixed;
+    background: #EEF0F2;
+}
+
+.redneg {color: red}
+
+.create_tr {
+    background: #C6CACE;
+    border-radius: 5px;
+    margin-top: 20px;
+    max-width: 700px;
+    padding: 20px;
+}
+
+.create_tr .jmemo {
+    width: 98%;
+}
+
+.create_tr table {
+    margin-top: 5px; 
+    width: 100%;
+}
+
+.create_tr table td:first-child {
+    width: 55%;
+}
+.create_tr table td input {
+    width: 100%;
+}
+
+.create_tr a {
+    text-decoration: none;
+}
+
+.create_tr ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+
+.edit-user {
+    background: #C6CACE;
+    border-radius: 5px;
+    margin-top: 20px;
+    max-width: 700px;
+    padding: 20px;
+}
+
+.edit-user label {
+    display: inline-block;
+    width: 16ex;
+}
+
+.logout {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.batchinfo {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+div.lorem-ipsum {
+    max-width: 700px;
+}
+
+div.lorem-ipsum > p::first-letter {
+    color: crimson;
+    font-size: 150%;
+    font-family: cursive;
+}
+
+
+
