@@ -1,8 +1,7 @@
-% rebase('base.html', title='RecordSheet')
+% rebase('base.html', title='RecordSheet', extra_css=['reports.css'])
 %fmt_name = lambda s: s.split(':')[-1]
 % tot_income = 0
 % tot_expense = 0
-<link href="/static/reports.css" rel="stylesheet" />
 <section>
     <h1>{{entity}}</h1>
     <h2>Profit and Loss {{period[0].year}}</h2>
