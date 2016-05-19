@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import os
 from setuptools import setup
+import RecordSheet
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name="RecordSheet",
-    version="1.0.dev",
-    author="Eric Beanland",
+    version=RecordSheet.__version__,
+    author=RecordSheet.__author__,
     author_email="eric.beanland@gmail.com",
     description=("Double entry accounting application for small business."),
     license="GPLv3+",

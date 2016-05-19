@@ -19,7 +19,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-__author__ = "Eric Beanland <eric.beanland@gmail.com>"
-__date__ = "2016-05-03"
-__version__ = '1.0'
+__author__ = "Eric Beanland"
+__date__ = "2016-05-19"
+__version__ = '1.0.0-alpha'
 
