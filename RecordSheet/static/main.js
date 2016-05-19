@@ -17,6 +17,10 @@ You should have received a copy of the GNU General Public License along
 with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// baseUrl provides a prefix for urls, without requiring the app to be
+// at any specfic location
+var baseUrl = document.querySelector('meta[name="app-root"]').getAttribute('content');
+
 function Post(data) {
     this.memo = ko.observable(data.memo || "")
     this.account = ko.observable(data.account || "")
@@ -41,7 +45,7 @@ function getAccounts(callback) {
         console.log("failed to retrieve accounts");
     };
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", '/json/accounts');
+    oReq.open("GET", baseUrl+'/json/accounts');
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
     oReq.send();
@@ -62,7 +66,7 @@ function getPending(page, resultArray) {
         console.log(event);
     };
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", '/json/import?page=' + page);
+    oReq.open("GET", baseUrl+'/json/import?page=' + page);
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
     oReq.send();
@@ -165,7 +169,7 @@ function createAcctViewModel(params) {
             self._errorMsg("xhr error");
         };
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", '/json/accounts/new');
+        oReq.open("POST", baseUrl+'/json/accounts/new');
         oReq.addEventListener("load", self.load_cb);
         oReq.addEventListener("error", self.error_cb);
         oReq.setRequestHeader("Accept", 'application/json');
@@ -224,7 +228,7 @@ function createTrViewModel(params) {
             console.log(event);
         };
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", '/json/journal/new');
+        oReq.open("POST", baseUrl+'/json/journal/new');
         oReq.addEventListener("load", self.load_cb);
         oReq.addEventListener("error", self.error_cb);
         oReq.setRequestHeader("Accept", 'application/json');
@@ -290,7 +294,7 @@ function GetRsComponent(url, callback) {
         console.log(event);
     };
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", url);
+    oReq.open("GET", baseUrl+url);
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
     oReq.send();

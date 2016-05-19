@@ -326,6 +326,7 @@ def app():
     bottle.BaseTemplate.defaults['bottle'] = bottle
     bottle.BaseTemplate.defaults['url'] = rsapp.get_url
     bottle.BaseTemplate.defaults['app'] = rsapp
+    bottle.BaseTemplate.defaults['request'] = request
     bottle.BaseTemplate.defaults['jsonDumps'] = util.jsonDumps
     bottle.BaseTemplate.defaults['www_session'] = www_session
 
