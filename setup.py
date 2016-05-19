@@ -14,6 +14,7 @@ setup(
     license="GPLv3+",
     keywords="double entry accounting",
     packages=['RecordSheet'],
+    include_package_data=True,
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -23,14 +24,10 @@ setup(
         "Programming Language :: Python :: 3.4"
     ],
     entry_points={'console_scripts': ['recordsheet = RecordSheet.webapp:main']},
-    install_requires=['bcrypt==2.0.0',
-                      'Beaker==1.8.0',
+    install_requires=['Beaker==1.8.0',
                       'bottle==0.12.9',
-                      'cffi==1.6.0',
                       'gevent==1.1.1',
                       'greenlet==0.4.9',
                       'psycopg2==2.6.1',
-                      'pycparser==2.14',
-                      'six==1.10.0',
                       'SQLAlchemy==1.0.12']
 )
