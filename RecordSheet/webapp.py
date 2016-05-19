@@ -84,7 +84,11 @@ def account_chart():
 @rsapp.route('/accounts/<id:int>', name='account_view')
 @view('account')
 def account_view(id):
-    return {"account": dbapi.get_account(id)}
+    acct = dbapi.get_account(id)
+    if acct is None:
+        abort(404, "Account {} Doesn't Exist".format(id))
+
+    return {"account": acct}
 
 
 @rsapp.route('/json/accounts', name='accounts_json')
@@ -140,7 +144,11 @@ def new_transaction_json():
 @rsapp.route('/batch/<id:int>', name='batch_view')
 @view('batch')
 def batch(id):
-    return {"batch": dbapi.get_batch(id)}
+    batch = dbapi.get_batch(id)
+    if batch is None:
+        abort(404, "Batch {} Doesn't Exist".format(id))
+
+    return {"batch": batch}
 
 ###############################################################################
 
@@ -153,7 +161,11 @@ def journal():
 @rsapp.route('/journal/<id:int>', name='journal_entry_view')
 @view('journal')
 def journal_entry(id):
-    return {"journals":[dbapi.get_journal(id)], "posts":[]}
+    journal = dbapi.get_journal(id)
+    if journal is None:
+        abort(404, "Journal Entry {} Doesn't Exist".format(id))
+
+    return {"journals":[journal], "posts":[]}
 
 ###############################################################################
 
@@ -202,7 +214,11 @@ def import_tr_json():
 
 @rsapp.route('/users/<username>', name='user_view')
 def user_view(username):
-    return {'user':dbapi.get_user_by_name(username)}
+    user = dbapi.get_user_by_username(username)
+    if user is None:
+        abort(404, "User \"{}\" Doesn't Exist".format(username))
+
+    return {'user': user}
 
 
 @rsapp.post('json/users/new')
