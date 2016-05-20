@@ -1,0 +1,99 @@
+% rebase('base.html', title='RecordSheet')
+<section>
+<h1>Incomplete Transactions</h1>
+<table class="import">
+    <thead>
+        <tr>
+            <th colspan=2>Memo</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <th>Date Time</th>
+            <th>Account</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <!-- ko foreach: pending.slice(start,end)    -->
+        <tr>
+            <td data-bind="text: memo" colspan=2></td>
+            <td data-bind="text: amount"></td>
+        </tr>
+        <tr>
+            <td data-bind="DateTime: datetime"></td>
+            <td data-bind="fmtAcctId: account_id"></td>
+            <td><input data-bind="checkedValue: $data, checked: $root.posts" type=checkbox /></td>
+        </tr>
+    <!-- /ko -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan=3>
+                <a data-bind="click: prev" href="" >Prev</a>
+                <span data-bind="text: page"></span>
+                <a data-bind="click: next" href="" >Next</a>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<create-tr params="posts:posts"></create-tr>
+</section>
+<script type="text/javascript">
+//rendered server side
+initialPending = {{!jsonDumps(posts)}}
+
+var ViewModel = function() {
+    var self = this;
+    self.posts = ko.observableArray();
+    self.pending = ko.observableArray(initialPending);
+    self.account_id = ko.observable();
+    self.page = ko.observable(0);
+    self.start = 0;
+    self.end = 10;
+    self.pageLength = 10;
+
+    self.setPage = function(page) {
+        //set the current page and load it from xhr if needed
+        if (self.page() === page) {return;}
+        self.page(page);
+        self.start = self.pageLength * page
+        self.end = self.start + self.pageLength;
+        self.pending.valueHasMutated();
+        if (self.end > self.pending().length) {
+            getPending(page, self.pending);
+        }
+    }
+
+    self.next = function() {
+        //console.log("next clicked");
+        var page = self.page() + 1;
+        //getPending(page, self.pending);
+        self.setPage(page);
+    };
+
+    self.prev = function() {
+        //console.log("prev clicked");
+        var page = self.page() - 1;
+        //getPending(page, self.pending);
+        self.setPage(page);
+    };
+
+    //watch for deleted posts and remove them from pending if obj.posted=true
+    self.posts.subscribe(function(changes) {
+        changes.forEach(function(change) {
+            if (change.status === 'deleted' && change.value.id != null && change.value.posted) {
+                console.log("posted");
+                self.pending.remove(change.value);
+            }
+        });
+        //check if more data is needed from xhr
+        if (self.end > self.pending().length) {
+            getPending(self.page()+1, self.pending);
+        }
+    }, null, "arrayChange");
+};
+
+var vm = new ViewModel()
+ko.applyBindings(vm);
+</script>
+</section>

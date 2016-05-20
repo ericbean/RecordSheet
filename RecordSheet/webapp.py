@@ -172,11 +172,7 @@ def journal_entry(id):
 @rsapp.route('/import', name='import_tr')
 @view('import')
 def import_tr():
-    pagesize = 10
-    page = int(request.query.get('page', 0))
-    offset = page * pagesize
-    return {"posts": dbapi.get_pending_posts(limit=pagesize,offset=offset),
-            'accounts': dbapi.get_accounts()}
+    return {}
 
 
 @rsapp.post('/import', name='import_tr_post')
@@ -198,7 +194,20 @@ def import_tr_post():
                    "ref":tr.refnum,
                    "fitid":tr.fitid}
 
+    #FIXME I deleted the part where data is actually inserted. IDKY or when.
     redirect(rsapp.get_url('import_tr'))
+
+
+###############################################################################
+
+@rsapp.route('/incomplete', name='incomplete')
+@view('incomplete')
+def incomplete_trs():
+    pagesize = 10
+    page = int(request.query.get('page', 0))
+    offset = page * pagesize
+    #TODO load all the data from xhr
+    return {"posts": dbapi.get_pending_posts(limit=pagesize,offset=offset)}
 
 
 @rsapp.route('/json/import', name='import_tr_json')
