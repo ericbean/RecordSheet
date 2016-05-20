@@ -198,7 +198,7 @@ def import_tr_post():
                    "ref":tr.refnum,
                    "fitid":tr.fitid}
 
-    redirect('/import')
+    redirect(rsapp.get_url('import_tr'))
 
 
 @rsapp.route('/json/import', name='import_tr_json')
