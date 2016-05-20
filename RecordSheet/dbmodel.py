@@ -69,11 +69,16 @@ class pendingPost(Base, JsonMixin):
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     datetime = Column(DateTime(timezone=True))
     amount = Column(Numeric, default=0)
-    desc = Column(Unicode(length=256))
     memo = Column(Unicode(length=1024))
     ref = Column(Unicode(length=32))
-    fitid = Column(Unicode(length=255), unique=True)
+    # transaction id from the bank, only unique to bank+account
+    fitid = Column(Unicode(length=255))
     posted = Column(Boolean, default=False)
+    # sha1 hash of some of the data making up the transaction to ensure
+    # it's unique. Eg concatenating the bank routing number, account number
+    # fitid and hashing that would be acceptable. The intention is to prevent
+    # the same transactions from being imported more than once.
+    tid = Column(LargeBinary, unique=True, nullable=True)
 
     @property
     def fmt_datetime(self):
