@@ -29,6 +29,7 @@ from bottle import (abort, delete, get, hook, post, put, redirect, request,
     response, route, view)
 
 from RecordSheet import dbapi, dbmodel, reports, util
+from RecordSheet.config import OPTIONS
 from RecordSheet.ofx import ofx
 
 #monkey patch bottle json funcs
@@ -341,7 +342,9 @@ def csrf_check():
 
 ###############################################################################
 
-def app():
+def app(**kwargs):
+    OPTIONS.update(kwargs)
+
     # merge instead of mount
     rsapp.merge(reports.app)
     # setup path for views

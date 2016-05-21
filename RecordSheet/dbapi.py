@@ -23,12 +23,13 @@ from decimal import Decimal
 import hashlib
 import os
 
-from RecordSheet.dbmodel import (Account, Batch, Journal, Posting, pendingPost,
-                                    User, Base)
-
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+
+from RecordSheet.config import OPTIONS
+from RecordSheet.dbmodel import (Account, Batch, Journal, Posting, pendingPost,
+                                    User, Base)
 
 ###############################################################################
 
@@ -37,17 +38,15 @@ class DBException(Exception):
 
 ###############################################################################
 
-#TODO load this info from a config file or env var.
-DB_CONNECT_STR = 'postgresql:///recordsheet'
-DB_CONNECT_STR_TESTING = 'postgresql:///recordsheet_test'
-
 _session = None
 
-def init(connect_str=DB_CONNECT_STR):
+def init():
     """Initiallize the database connection"""
     global _session
     if _session:
         return _session
+
+    connect_str = OPTIONS['dbconnectstr']
     engine = create_engine(connect_str, echo=False)
     session_factory = sessionmaker(bind=engine)
     meta = Base.metadata.create_all(engine)
