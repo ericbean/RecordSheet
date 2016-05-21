@@ -30,5 +30,7 @@ setup(
                       'gevent==1.1.1',
                       'greenlet==0.4.9',
                       'psycopg2==2.6.1',
-                      'SQLAlchemy==1.0.12']
+                      'SQLAlchemy==1.0.12'],
+    test_suite='nose.collector',
+    tests_require=['nose']
 )
