@@ -69,19 +69,37 @@ def get_accounts(limit=None, offset=0):
 
 
 def get_account(account_id):
-    """Get account by account id"""
+    """Get account by account id
+
+    :param batch: The account id.
+
+    :returns: The account-id object.
+
+    """
     ses = _session()
     return ses.query(Account).get(account_id)
 
 
 def get_account_by_name(name):
-    """Get account by name"""
+    """Get account by name
+
+    :param batch: The account name.
+
+    :returns: The name object.
+
+    """
     ses = _session()
     return ses.query(Account).filter(Account.name==name).one()
 
 
 def new_account(name, desc):
-    """Create new account with name and desc"""
+    """Create new account with name and desc
+
+    :param batch: The new accout with name and desc.
+
+    :returns: The name and desc object.
+
+    """
     acct = None
     try:
         acct = Account(name=name, desc=desc)
@@ -98,32 +116,65 @@ def new_account(name, desc):
 ###############################################################################
 
 def get_batch(id):
-    """Get batch id"""
+    """Get batch id
+
+    :param batch: The batch id.
+
+    :returns: The id object.
+
+    """
     ses = _session()
     return ses.query(Batch).get(id)
 
 def new_batch(username):
-    """Creat new batch with username"""
+    """Creat new batch with username
+
+    :param batch: The new batch with username.
+
+    :returns: The username object.
+
+    """
     return Batch(user=username)
 
 ###############################################################################
 
 def get_journals(limit=None, offset=0):
-    """Get journal entries"""
+    """Get journal entries
+
+    :param posts:  The journal entries.
+    :param batch:  
+
+    :returns: The journal entries object.
+
+    """
+
     ses = _session()
     return ses.query(Journal).order_by(desc(Journal.datetime))\
         .limit(limit).offset(offset).all()
 
 
 def get_journal(id):
-    """Get journal with id"""
+    """Get journal with id
+
+    :param batch: The journal id.
+
+    :returns: The id object.
+
+    """
     ses = _session()
     return ses.query(Journal).get(id)
 
 ###############################################################################
 
 def posts(account_id):
-    """Get posts from accounts with account id"""
+    """Get posts from accounts with account id.
+
+    :param account_id: List of posts from accounts with account id.
+
+    :returns: The account_id
+     objects.
+
+    """
     ses = _session()
     return ses.query(Posting).filter(Posting.account_id==account_id)\
                 .join(Journal).order_by(Journal.datetime)
@@ -131,7 +182,15 @@ def posts(account_id):
 ###############################################################################
 
 def new_transaction(batch, posts=None, datetime=None, memo=None):
-    """Create new transaction"""
+    """Create new transaction.
+
+    :param batch: The current batch.
+    :param posts: A list of dicts with transaction data.
+    :param datetime: The date and time of the transaction. If datetime is None,
+    the current date and time will be used.
+    :param memo: Memo for the journal entry.
+
+    """
     ses = _session()
     closed = ses.query(Account.id).filter(Account.closed==True)
     closed = set(r[0] for r in closed)
@@ -205,14 +264,26 @@ def get_pending_posts(limit=None, offset=0):
 
 
 def pending_posts_count():
-    """Get the number of un-posted rows in pending_posts."""
+    """Get the number of un-posted rows in pending_posts.
+
+    :param batch: The number of un-posted rows in pending_posts.
+
+    :returns: The number of un-posted rows in pending_posts.
+
+    """
     ses = _session()
     return ses.query(func.count(pendingPost.posted))\
                 .filter(pendingPost.posted == False).scalar()
 
 
 def new_pending_posts(transactions):
-    """Create new pending posts from list of transactions"""
+    """Create new pending posts from list of transactions
+
+    :param batch: A list of new pending post transactions.
+
+    :returns: A list of new pending post transactions.
+
+    """
     ses = _session()
     fitids = set([r[0] for r in ses.query(pendingPost.fitid)])
     dup = []
@@ -241,13 +312,25 @@ def get_users():
 
 
 def get_user(id):
-    """Get user with id"""
+    """Get user with id
+
+    :param batch: User with id
+
+    :returns: User object
+
+    """
     ses = _session()
     return ses.query(User).get(id)
 
 
 def get_user_by_username(username):
-    """Get user by username."""
+    """Get user by username.
+
+    :param batch: Username
+
+    :returns: Username object
+
+    """
     ses = _session()
     return ses.query(User).filter(User.username==username).one()
 
