@@ -29,10 +29,10 @@ function Post(data) {
 };
 
 /*****************************************************************************/
-_accounts = [];
+var _accounts = [];
+var pending = null;
+//retrieve a list of all accounts
 function getAccounts(callback) {
-    //retrieve a list of all accounts
-    if (_accounts) {callback(_accounts);}
     this.load_cb = function(event) {
         var xhr = event.currentTarget;
         if (xhr.status === 200) {
@@ -41,10 +41,21 @@ function getAccounts(callback) {
             callback(_accounts);
         }
     };
+
     this.error_cb = function(event) {
         console.log("failed to retrieve accounts");
     };
+
+    if (_accounts.length > 0) {
+        callback(_accounts);
+        return;
+    } else if (pending) {
+        pending.addEventListener("load", self.load_cb);
+        return;
+    }
+
     var oReq = new XMLHttpRequest();
+    pending = oReq;
     oReq.open("GET", baseUrl+'/json/accounts');
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
@@ -121,6 +132,7 @@ ko.bindingHandlers.DateTime = {
 // Auto complete account names
 ko.bindingHandlers.autoAcct = {
     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        var accts = getAccounts(function(data) {}) // make sure accounts are loaded if this inited
         element.dataset.prevText = ''; // initialized outside the event callback
         ko.utils.registerEventHandler(element, 'input', function(event) {
             searchString = element.value.toUpperCase();
