@@ -28,8 +28,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from RecordSheet.config import OPTIONS
-from RecordSheet.dbmodel import (Account, Batch, Journal, Posting, pendingPost,
-                                    User, Base)
+from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
+                                    ImportedTransaction, User, Base)
 
 ###############################################################################
 
@@ -171,7 +171,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 
             # check for a related pending object and copy fields from it
             if 'id' in p and p['id']:
-                pend = ses.query(pendingPost).get(p['id'])
+                pend = ses.query(ImportedTransaction).get(p['id'])
                 post = pend.to_post()
                 pend.posted = True
                 if p['memo']:
@@ -203,45 +203,36 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
         raise
 
 ###############################################################################
-
-def get_pending_posts(limit=None, offset=0):
+#ImportedTransaction
+def get_imported_transactions(limit=None, offset=0):
     ses = _session()
     sortdir = asc
     if offset < 0:
         sortdir = desc
         offset = abs(offset)
 
-    return ses.query(pendingPost).filter(pendingPost.posted != True) \
-                .order_by(sortdir(pendingPost.datetime)) \
+    return ses.query(ImportedTransaction) \
+                .filter(ImportedTransaction.posted != True) \
+                .order_by(sortdir(ImportedTransaction.datetime)) \
                 .limit(limit).offset(offset).all()
 
 
-def pending_posts_count(session):
-    """Get the number of un-posted rows in pending_posts."""
-    ses = _session()
-    return ses.query(func.count(pendingPost.posted))\
-                .filter(pendingPost.posted == False).scalar()
-
-
-def new_pending_posts(session, transactions):
-    ses = _session()
-    fitids = set([r[0] for r in ses.query(pendingPost.fitid)])
-    dup = []
-    for tr in transactions:
-        pp = pendingPost(**tr)
-        if pp.fitid in fitids:
-            dup.append(pp)
-        else:
-            session.add(pp)
+def insert_imported_transactions(transactions):
+    """Bulk insert of imported transaction data into database."""
 
     try:
+        ses = _session()
+        # filter out dups
+        tids = set([r[0] for r in ses.query(ImportedTransaction.tid)])
+        trs = (trs for trs in transactions if trs['tid'] not in tids)
+
+        # bulk insert
+        ses.bulk_insert_mappings(ImportedTransaction, trs)
         ses.commit()
 
     except Exception:
         ses.rollback()
         raise
-
-    return dup
 
 ###############################################################################
 

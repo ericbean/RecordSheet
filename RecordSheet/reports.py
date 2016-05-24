@@ -27,7 +27,8 @@ from bottle import (Bottle, delete, get, post, put, redirect, request,
 
 from sqlalchemy import asc, desc, func
 from RecordSheet import dbapi, dbmodel, util
-from RecordSheet.dbmodel import Account, Batch, Journal, Posting, pendingPost
+from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
+                                    ImportedTransaction)
 
 app = bottle.Bottle()
 

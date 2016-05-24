@@ -63,14 +63,14 @@ class Posting(Base, JsonMixin):
 
 ###############################################################################
 
-class pendingPost(Base, JsonMixin):
-    __tablename__ = 'pending_posts'
+class ImportedTransaction(Base, JsonMixin):
+    __tablename__ = 'imported_transaction'
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
-    datetime = Column(DateTime(timezone=True))
-    amount = Column(Numeric, default=0)
-    memo = Column(Unicode(length=1024))
-    ref = Column(Unicode(length=32))
+    datetime = Column(DateTime(timezone=True), nullable=False)
+    amount = Column(Numeric, default=0, nullable=False)
+    memo = Column(Unicode(length=1024), nullable=False)
+    ref = Column(Unicode(length=32), nullable=False)
     # transaction id from the bank, only unique to bank+account
     fitid = Column(Unicode(length=255))
     posted = Column(Boolean, default=False)
@@ -78,7 +78,7 @@ class pendingPost(Base, JsonMixin):
     # it's unique. Eg concatenating the bank routing number, account number
     # fitid and hashing that would be acceptable. The intention is to prevent
     # the same transactions from being imported more than once.
-    tid = Column(LargeBinary, unique=True, nullable=True)
+    tid = Column(String(length=64), unique=True, nullable=True)
 
     @property
     def fmt_datetime(self):
@@ -139,7 +139,6 @@ class Account(Base, JsonMixin):
     desc = Column(Unicode(length=1024), nullable=False, default='')
     closed = Column(Boolean, default=False)
     posts = relationship('Posting', backref='account')
-    pending_posts = relationship('pendingPost', backref='account')
 
     @hybrid_property
     def short_name(self):
