@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+
+"""
+
 import datetime
 from decimal import Decimal
 import hashlib
@@ -34,6 +38,7 @@ from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
 ###############################################################################
 
 class DBException(Exception):
+    """Base exception class for dbapi."""
     pass
 
 ###############################################################################
@@ -41,7 +46,11 @@ class DBException(Exception):
 _session = None
 
 def init():
-    """Initiallize the database connection"""
+    """Initiallize the database connection.
+
+    :returns: a SQLAlchemy session object.
+    """
+
     global _session
     if _session:
         return _session
@@ -57,49 +66,39 @@ def init():
 
 
 def Session():
-    """Create a SQLAlchemy session."""
+    """Create a new SQLAlchemy session."""
     return _session()
 
 ###############################################################################
 
 def get_accounts(limit=None, offset=0):
-    """Get accounts"""
+    """Get a list of accounts with limit and offset."""
     ses = _session()
     return ses.query(Account).order_by(Account.name)\
             .limit(limit).offset(offset).all()
 
 
 def get_account(account_id):
-    """Get account by account id
-
-    :param batch: The account id.
-
-    :returns: The account-id object.
-
-    """
+    """Get the account with `account_id`."""
     ses = _session()
     return ses.query(Account).get(account_id)
 
 
 def get_account_by_name(name):
-    """Get account by name
-
-    :param batch: The account name.
-
-    :returns: The name object.
-
-    """
+    """Get the account with `name`."""
     ses = _session()
     return ses.query(Account).filter(Account.name==name).one()
 
 
 def new_account(name, desc):
-    """Create new account with name and desc
+    """Create a new account.
 
-    :param batch: The new accout with name and desc.
-
-    :returns: The name and desc object.
-
+    :param name: Name for the account.
+    :type name: str
+    :param desc: A short description for the account.
+    :type desc: str
+    :returns: An Account instance
+    :raises: RecordSheet.dbapi.DBException if name is invalid.
     """
     ses = _session()
     try:
@@ -129,38 +128,25 @@ def new_account(name, desc):
 ###############################################################################
 
 def get_batch(id):
-    """Get batch id
-
-    :param batch: The batch id.
-
-    :returns: The id object.
-
-    """
+    """Get batch with id."""
     ses = _session()
     return ses.query(Batch).get(id)
 
 
 def new_batch(user_id):
-    """Creat new batch with username
+    """Create new batch with user id
 
-    :param batch: The new batch with username.
+    :param user_id: The new batch with user id.
+    :type user_id: int
 
-    :returns: The username object.
-
+    :returns: A Batch instance
     """
     return Batch(user_id=user_id)
 
 ###############################################################################
 
 def get_journals(limit=None, offset=0):
-    """Get journal entries
-
-    :param posts:  The journal entries.
-    :param batch:
-
-    :returns: The journal entries object.
-
-    """
+    """Get journal entries with limit and offset."""
 
     ses = _session()
     return ses.query(Journal).order_by(desc(Journal.datetime))\
@@ -168,27 +154,14 @@ def get_journals(limit=None, offset=0):
 
 
 def get_journal(id):
-    """Get journal with id
-
-    :param batch: The journal id.
-
-    :returns: The id object.
-
-    """
+    """Get journal entry with id."""
     ses = _session()
     return ses.query(Journal).get(id)
 
 ###############################################################################
 
 def posts(account_id):
-    """Get posts from accounts with account id.
-
-    :param account_id: List of posts from accounts with account id.
-
-    :returns: The account_id
-     objects.
-
-    """
+    """Get posts with account id."""
     ses = _session()
     return ses.query(Posting).filter(Posting.account_id==account_id)\
                 .join(Journal).order_by(Journal.datetime)
@@ -196,14 +169,15 @@ def posts(account_id):
 ###############################################################################
 
 def new_transaction(batch, posts=None, datetime=None, memo=None):
-    """Create new transaction.
+    """Create a new transaction.
 
     :param batch: The current batch.
-    :param posts: A list of dicts with transaction data.
-    :param datetime: The date and time of the transaction. If datetime is None,
-    the current date and time will be used.
+    :param posts: An iterable of dicts with transaction data.
+    :param datetime: A datetime.datetime obj. If None, the current date and \
+    time will be used.
     :param memo: Memo for the journal entry.
 
+    :returns: A Journal instance
     """
     ses = _session()
     closed = ses.query(Account.id).filter(Account.closed==True)
@@ -276,7 +250,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 ###############################################################################
 
 def get_imported_transactions(limit=None, offset=0):
-    """Get pending posts with limit and offset"""
+    """Get imported transactions with limit and offset"""
     ses = _session()
     sortdir = asc
     if offset < 0:
@@ -290,7 +264,11 @@ def get_imported_transactions(limit=None, offset=0):
 
 
 def insert_imported_transactions(transactions):
-    """Bulk insert of imported transaction data into database."""
+    """Bulk insert of imported transaction data into database.
+
+    :param transactions: iterable of dicts. The keys of each dict represent \
+    attributes of an ImportedTransaction object and must contain valid values.
+    """
 
     try:
         ses = _session()
@@ -309,37 +287,28 @@ def insert_imported_transactions(transactions):
 ###############################################################################
 
 def get_users():
-    """Get users"""
+    """Get a list of all users."""
     ses = _session()
     return ses.query(User).all()
 
 
 def get_user(id):
-    """Get user with id
-
-    :param batch: User with id
-
-    :returns: User object
-
-    """
+    """Get user with `id`."""
     ses = _session()
     return ses.query(User).get(id)
 
 
 def get_user_by_username(username):
-    """Get user by username.
-
-    :param batch: Username
-
-    :returns: Username object
-
-    """
+    """Get user by `username`."""
     ses = _session()
     return ses.query(User).filter(User.username==username).one()
 
 
 def login(username, password):
-    """Login the user with username and password."""
+    """Login the user with username and password.
+
+    :returns: (user or None, success)
+    """
     ses = _session()
     try:
         user = get_user_by_username(username)
@@ -366,6 +335,13 @@ def login(username, password):
 
 
 def authenticate(user_id, password):
+    """Authenticate the user with `id`  with `password`.
+
+    :returns: True if the password is correct, otherwise False
+
+    .. note:: This function is for authentication only and is not intended \
+    for logins.
+    """
     try:
         ses = _session()
         user = get_user_by_username(username)
@@ -377,7 +353,13 @@ def authenticate(user_id, password):
 
 
 def set_password(user_id, password):
-    """Set the password for user with user_id."""
+    """Set the password for user with `user_id`.
+
+    :param id: The id of the user
+    :type id: int
+    :param password: The plaintext of the password
+    :type password: str or bytes
+    """
     ses = _session()
     user = ses.query(User).get(user_id)
     user.password = new_pw_hash(password)
@@ -392,6 +374,10 @@ HASH = 'sha512' # the hash
 HASH_ROUNDS = 100000 # the number of rounds to hash
 
 def new_pw_hash(plaintext):
+    """Hash the plaintext using pbkdf2 with a randomly generated salt.
+
+    :returns: bytes(salt + hash)
+    """
     # truncate the plaintext to PW_MAX
     plaintext = plaintext[:PW_MAX]
     if not isinstance(plaintext, bytes):
@@ -403,6 +389,11 @@ def new_pw_hash(plaintext):
 
 
 def compare_pw(plaintext, hashed):
+    """Hash plaintext and compare it with hashed. The first SALT_LEN bytes of \
+    hashed are assumed to be the salt.
+
+    :returns: True if both hashed values match, False otherwise.
+    """
     plaintext = plaintext[:PW_MAX]
     if not isinstance(plaintext, bytes):
             plaintext = plaintext.encode('utf8')
