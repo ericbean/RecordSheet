@@ -22,9 +22,9 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 var baseUrl = document.querySelector('meta[name="app-root"]').getAttribute('content');
 
 function Post(data) {
-    this.memo = ko.observable(data.memo || "")
-    this.account = ko.observable(data.account || "")
-    this.amount = ko.observable(data.amount || "")
+    this.memo = ko.observable(data.memo || "");
+    this.account_id = ko.observable(data.account || "");
+    this.amount = ko.observable(data.amount || "");
     this.id = data.id || null;
 };
 
@@ -57,27 +57,6 @@ function getAccounts(callback) {
     var oReq = new XMLHttpRequest();
     pending = oReq;
     oReq.open("GET", baseUrl+'/json/accounts');
-    oReq.addEventListener("load", self.load_cb);
-    oReq.addEventListener("error", self.error_cb);
-    oReq.send();
-};
-
-function getPending(page, resultArray) {
-    //retrieve a list of all accounts
-    this.load_cb = function(event) {
-        var xhr = event.currentTarget;
-        if (xhr.status === 200) {
-            var arr = JSON.parse(xhr.response).pending
-            //resultArray.splice(0, 10, ...arr);
-            resultArray.push(...arr);
-        }
-    };
-    this.error_cb = function(event) {
-        console.log("xhr error");
-        console.log(event);
-    };
-    var oReq = new XMLHttpRequest();
-    oReq.open("GET", baseUrl+'/json/import?page=' + page);
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
     oReq.send();
@@ -132,8 +111,21 @@ ko.bindingHandlers.DateTime = {
 // Auto complete account names
 ko.bindingHandlers.autoAcct = {
     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var accts = getAccounts(function(data) {}) // make sure accounts are loaded if this inited
         element.dataset.prevText = ''; // initialized outside the event callback
+        // set the inital state of element
+        var acct_name = "";
+        acct_name = ko.unwrap(valueAccessor());
+        //convert numeric acct id to name
+        if (typeof acct_name === 'number' || acct_name instanceof Number) {
+            for (var acct of _accounts) {
+                if (acct.id === acct_name) {
+                    acct_name = acct.name;
+                    break;
+                }
+            }
+        }
+        element.value = acct_name;
+
         ko.utils.registerEventHandler(element, 'input', function(event) {
             searchString = element.value.toUpperCase();
             acct = findAcct(searchString);
@@ -142,13 +134,22 @@ ko.bindingHandlers.autoAcct = {
             }
             if (acct) {
                 element.value = acct.name;
-                valueAccessor()(acct.name);
+                if (ko.isObservable(valueAccessor())) {
+                    valueAccessor()(acct.name);
+                } else {
+                    // quick fix but I hate this
+                    bindingContext.$rawData.account_id = acct.name;
+                }
                 selectStart = searchString.length;
                 selectEnd = acct.name.length;
                 element.setSelectionRange(selectStart, selectEnd);
             } else {
                 element.value = searchString;
-                valueAccessor()(searchString);
+                if (ko.isObservable(valueAccessor())) {
+                    valueAccessor()(searchString);
+                } else {
+                    bindingContext.$rawData.account_id = searchString;
+                }
             }
             element.dataset.prevText = searchString;
         }, false);
@@ -208,7 +209,6 @@ function createTrViewModel(params) {
     }
     self.errorMsg = ko.observable("");
     self.sendPosts = function() {
-        console.log("sendPosts()");
         if (!self.memo()) {
             self.errorMsg("Bad memo");
             return;
@@ -246,12 +246,10 @@ function createTrViewModel(params) {
         oReq.setRequestHeader("Accept", 'application/json');
         oReq.setRequestHeader("Content-Type", 'application/json');
         oReq.setRequestHeader("X-csrf-token", getCsrfToken());
-        console.log(cleanJson(o))
         oReq.send(cleanJson(o));
     };
     self.addRow = function() {
-        console.log("addRow()");
-        var p = new Post("", "", -self.sum());
+        var p = new Post({amount:-self.sum()});
         self.posts.push(p);
     };
     self.removePost = function(post) {
@@ -262,7 +260,7 @@ function createTrViewModel(params) {
             if (change.status === 'added' && self.posts().length === 1) {
                 p = change.value;
                 self.datetime(p.datetime || new Date());
-                self.memo(p.memo);
+                self.memo(ko.unwrap(p.memo));
             } else if (change.status === 'deleted') {
                 if (self.posts().length === 0) {
                     self.datetime(new Date());
@@ -270,7 +268,7 @@ function createTrViewModel(params) {
                 } else {
                     p = self.posts()[0];
                     self.datetime(p.datetime);
-                    self.memo(p.memo);
+                    self.memo(ko.unwrap(p.memo));
                 }
             }
         });

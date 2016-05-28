@@ -28,7 +28,7 @@ import bottle
 from bottle import (abort, delete, get, hook, post, put, redirect, request,
     response, route, view)
 
-from RecordSheet import dbapi, dbmodel, reports, util
+from RecordSheet import dbapi, dbmodel, mport, reports, util
 from RecordSheet.config import OPTIONS
 from RecordSheet.ofx import ofx
 
@@ -173,52 +173,51 @@ def journal_entry(id):
 @rsapp.route('/import', name='import_tr')
 @view('import')
 def import_tr():
-    return {}
+    return {'mport_formats':mport.formats}
 
 
 @rsapp.post('/import', name='import_tr_post')
 @view('import')
 def import_tr_post():
-    # TODO Need to check the mime type/ext/whatever and possibly handle
-    # csv files or other formats
+    file_format = request.forms.get('file_format')
     upload = request.files.get('upload')
-    account = dbapi.get_account_by_name(request.forms.get('account_name'))
-    data = ofx(upload.file)
-    transactions = data.accounts[0].statement.transactions
+    account_name = request.forms.get('account_name')
+    account_id = None
+    if account_name:
+        account = dbapi.get_account_by_name(account_name)
+        account_id = account.id
 
-    def tr_gen(transactions, account_id):
+    transactions = mport.formats[file_format](upload.file)
+
+    def trgen(transactions):
         for tr in transactions:
-            yield {"account_id":account_id,
-                   "datetime":tr.posted,
-                   "amount":tr.amount,
-                   "memo":html.unescape(tr.memo),
-                   "ref":tr.refnum,
-                   "fitid":tr.fitid}
+            tr['account_id'] = account_id
+            yield tr
 
-    #FIXME I deleted the part where data is actually inserted. IDKY or when.
+    dbapi.insert_imported_transactions(trgen(transactions))
+
     redirect(rsapp.get_url('import_tr'))
-
 
 ###############################################################################
 
-@rsapp.route('/incomplete', name='incomplete')
+@rsapp.route('/imported_transactions', name='imported_tr')
 @view('incomplete')
 def incomplete_trs():
     pagesize = 10
     page = int(request.query.get('page', 0))
     offset = page * pagesize
     #TODO load all the data from xhr
-    return {"posts": dbapi.get_pending_posts(limit=pagesize,offset=offset)}
+    return {"posts": dbapi.get_imported_transactions(limit=pagesize,offset=offset)}
 
 
-@rsapp.route('/json/import', name='import_tr_json')
+@rsapp.route('/json/imported_transactions', name='imported_tr_json')
 def import_tr_json():
     pagesize = 10
     page = int(request.query.get('page', 0))
     offset = page * pagesize
-    pposts = dbapi.get_pending_posts(limit=pagesize, offset=offset)
+    imported = dbapi.get_imported_transactions(limit=pagesize, offset=offset)
 
-    return {"pending": pposts}
+    return {"imported": imported}
 
 ###############################################################################
 

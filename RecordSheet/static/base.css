@@ -41,14 +41,18 @@ table.journal tbody > tr:nth-child(even) {background: #CCDDBA}
 table.journal tbody td:last-child {text-align: right}
 
 table.import th {background: #80AB82}
-table.import tbody > tr:nth-child(odd) {
+table.import thead tr:last-child th:last-child {text-align: right}
+table.import tbody:nth-child(odd) {
     background: #C8D5B9;
-    height: 2em;
+}
+
+table.import tbody td {
+/*    height: 2em;*/
     vertical-align: top;
 }
 
-table.import tbody > tr:nth-child(even) {background: #CCDDBA}
-table.import tbody td:last-child {text-align: right}
+table.import tbody:nth-child(even) {background: #CCDDBA}
+table.import tbody tr:last-child td:last-child {text-align: right}
 table.import tfoot {text-align: center}
 
 footer {

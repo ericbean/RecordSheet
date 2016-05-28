@@ -22,7 +22,7 @@
             <tbody data-bind="foreach: posts">
                 <tr>
                     <td><input data-bind="textInput: memo"/></td>
-                    <td><input data-bind="autoAcct: account" type="search"/></td>
+                    <td><input data-bind="autoAcct: account_id" type="search"/></td>
                     <td><input data-bind="textInput: amount" size="10"/></td>
                     <td><a data-bind="click: $parent.removePost" class="plus" href="#">&minus;</a></td>
                 </tr>

@@ -180,48 +180,45 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
     :returns: A Journal instance
     """
     ses = _session()
-    closed = ses.query(Account.id).filter(Account.closed==True)
-    closed = set(r[0] for r in closed)
+    # dictionary of name, id pairs
+    accounts = dict(ses.query(Account.name, Account.id).all())
+    closed = set(zip(*ses.query(Account.id).filter(Account.closed==True)))
 
     try:
         #length test
         if not posts or len(posts) < 2:
             raise DBException("Journal entries require at least two posts")
 
-        # balance test
-        if sum([Decimal(p['amount']) for p in posts]):
-            raise DBException("Journal entry must sum to zero")
-
         # test for empty memo
         if not memo or memo == "":
             raise DBException("Journal memo field must not be empty")
 
         _posts = []
+        total = 0
         for p in posts:
-            if 'account_id' in p:
-                acct = ses.query(Account).get(p['account_id'])
+            total += p['amount']
+            if p['account_id'] in {None, ""}:
+                raise DBException("Account can not be null or Empty")
 
-            elif 'account' in p:
-                acct = ses.query(Account).filter(Account.name==p['account']) \
-                        .one()
+            if isinstance(p['account_id'], str):
+                p['account_id'] = accounts[p['account_id']]
 
-                p['account_id'] = acct.id
+            if p['account_id'] in closed:
+                raise DBException("Account {} is closed")
 
-            else:
-                raise DBException("Post must contain account id or name")
-
-            # test for closed accounts
-            if acct.closed:
-                raise DBException("Can not post to a closed account")
-
-            # check for a related pending object and copy fields from it
+            # copy fields from the related imported transaction
             if 'id' in p and p['id']:
-                pend = ses.query(ImportedTransaction).get(p['id'])
-                post = pend.to_post()
-                pend.posted = True
-                if p['memo']:
-                    post.memo = p['memo']
-
+                imp = ses.query(ImportedTransaction).get(p['id'])
+                if imp.posted:
+                    raise DBException("Imported Tranaction {} is already "
+                                        "posted".format(imp.id))
+                post = Posting()
+                post.account_id = p['account_id']
+                post.amount = p['amount']
+                post.fitid = p['fitid']
+                post.memo = p['memo'] or imp.memo
+                post.ref = p['ref']
+                imp.posted = True
                 _posts.append(post)
 
             else:
@@ -229,6 +226,10 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
                                memo=(p['memo'] or memo))
 
                 _posts.append(post)
+
+        # balance test
+        if total != 0:
+            raise DBException("Posts must sum to zero")
 
         # create the actual posts and add them to the session
         # this is done seperately because a query after objects have been
@@ -242,6 +243,10 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 
         ses.commit()
         return journal
+
+    except KeyError:
+        ses.rollback()
+        raise DBException("Missing Item")
 
     except Exception:
         ses.rollback()

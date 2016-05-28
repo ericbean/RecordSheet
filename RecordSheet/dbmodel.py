@@ -66,7 +66,8 @@ class Posting(Base, JsonMixin):
 class ImportedTransaction(Base, JsonMixin):
     __tablename__ = 'imported_transaction'
     id = Column(Integer, primary_key=True)
-    account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+    account_hint = Column(Unicode(length=256), default="")
     datetime = Column(DateTime(timezone=True), nullable=False)
     amount = Column(Numeric, default=0, nullable=False)
     memo = Column(Unicode(length=1024), nullable=False)
@@ -189,6 +190,4 @@ def posting_insert_listener(mapper, connection, target):
     target.seq = connection.scalar("SELECT (COALESCE(MAX(seq), 0) + 1) "
                                    "as max_seq FROM posts WHERE "
                                    "account_id={}".format(target.account_id))
-
-
 

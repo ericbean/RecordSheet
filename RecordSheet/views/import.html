@@ -7,8 +7,9 @@
     <input id="fileul" type="file" name="upload"></input>
     <label>Format</label>
     <select name="file_format">
-        <option>Auto</option>
-        <option>OFX</option>
+    % for fmt in mport_formats:
+        <option>{{fmt}}</option>
+    % end
     </select>
     <label>Account</label>
     <input data-bind="autoAcct: account" type="search" name="account_name"/>

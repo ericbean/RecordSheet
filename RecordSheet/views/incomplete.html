@@ -4,28 +4,28 @@
 <table class="import">
     <thead>
         <tr>
+            <th>Date Time</th>
             <th colspan=2>Memo</th>
+        </tr>
+        <tr>
+            <th>From Acct</th>
+            <th></th>
             <th>Amount</th>
         </tr>
-        <tr>
-            <th>Date Time</th>
-            <th>Account</th>
-            <th></th>
-        </tr>
     </thead>
+    <!-- ko foreach: pending    -->
     <tbody>
-    <!-- ko foreach: pending.slice(start,end)    -->
-        <tr>
-            <td data-bind="text: memo" colspan=2></td>
-            <td data-bind="text: amount"></td>
-        </tr>
         <tr>
             <td data-bind="DateTime: datetime"></td>
-            <td data-bind="fmtAcctId: account_id"></td>
-            <td><input data-bind="checkedValue: $data, checked: $root.posts" type=checkbox /></td>
+            <td data-bind="text: memo" colspan=2></td>
         </tr>
-    <!-- /ko -->
+        <tr>
+            <td data-bind="text: account_hint"></td>
+            <td><input data-bind="checkedValue: $data, checked: $root.posts" type=checkbox /></td>
+            <td data-bind="text: amount"></td>
+        </tr>
     </tbody>
+    <!-- /ko -->
     <tfoot>
         <tr>
             <td colspan=3>
@@ -41,13 +41,22 @@
 <script type="text/javascript">
 //rendered server side
 initialPending = {{!jsonDumps(posts)}}
+//function getQs() {
+var qs = decodeURI(window.location.search.substring(1)).split('&');
+qsMap = new Map();
+for (var subqs of qs) {
+    var[k,v] = subqs.split('='); //ES6 destructuring
+    qsMap[k] = v;
+}
+
+//}
 
 var ViewModel = function() {
     var self = this;
     self.posts = ko.observableArray();
     self.pending = ko.observableArray(initialPending);
     self.account_id = ko.observable();
-    self.page = ko.observable(0);
+    self.page = ko.observable(parseInt(qsMap['page'] || 0));
     self.start = 0;
     self.end = 10;
     self.pageLength = 10;
@@ -60,21 +69,17 @@ var ViewModel = function() {
         self.end = self.start + self.pageLength;
         self.pending.valueHasMutated();
         if (self.end > self.pending().length) {
-            getPending(page, self.pending);
+            self.getPending(page, self.pending);
         }
     }
 
     self.next = function() {
-        //console.log("next clicked");
         var page = self.page() + 1;
-        //getPending(page, self.pending);
         self.setPage(page);
     };
 
     self.prev = function() {
-        //console.log("prev clicked");
         var page = self.page() - 1;
-        //getPending(page, self.pending);
         self.setPage(page);
     };
 
@@ -82,17 +87,34 @@ var ViewModel = function() {
     self.posts.subscribe(function(changes) {
         changes.forEach(function(change) {
             if (change.status === 'deleted' && change.value.id != null && change.value.posted) {
-                console.log("posted");
-                self.pending.remove(change.value);
+                self.getPending(self.page());
             }
         });
-        //check if more data is needed from xhr
-        if (self.end > self.pending().length) {
-            getPending(self.page()+1, self.pending);
-        }
     }, null, "arrayChange");
-};
 
+    self.getPending = function(page) {
+        this.load_cb = function(event) {
+            var xhr = event.currentTarget;
+            if (xhr.status === 200) {
+                var arr = JSON.parse(xhr.response).imported
+                //resultArray.push(...arr);
+                self.pending.splice(0,self.pageLength, ...arr);
+                self.page(page);
+            }
+        };
+        this.error_cb = function(event) {
+            console.log("xhr error");
+            console.log(event);
+        };
+        var oReq = new XMLHttpRequest();
+        var url = baseUrl+'/json/imported_transactions?page=' + page
+        oReq.open("GET", url);
+        oReq.addEventListener("load", self.load_cb);
+        oReq.addEventListener("error", self.error_cb);
+        oReq.send();
+    };
+};
+var accts = getAccounts(function(data) {}) // make sure accounts are loaded
 var vm = new ViewModel()
 ko.applyBindings(vm);
 </script>
