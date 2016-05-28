@@ -237,7 +237,7 @@ def json_user_new():
 ###############################################################################
 
 @rsapp.route('/me', name='me')
-@view('user_self')
+@view('me')
 def user_self_edit():
     ws = www_session()
     user = dbapi.get_user(ws['user_id'])
