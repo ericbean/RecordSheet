@@ -196,7 +196,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
         _posts = []
         total = 0
         for p in posts:
-            total += p['amount']
+            total += Decimal(p['amount'])
             if p['account_id'] in {None, ""}:
                 raise DBException("Account can not be null or Empty")
 
