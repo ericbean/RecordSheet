@@ -1,6 +1,23 @@
-body {background: #dbdbdb;padding-bottom: 20px;}
+body {
+    background: #dbdbdb;
+    margin: 0;
+    padding-bottom: 20px;
+}
 
-header {text-align: center}
+header {
+/*    margin-top: 0;*/
+    padding-top: 10px;
+    background: #B4ADA3;
+    width: 100%;
+    text-align: center;
+}
+
+header a {
+    color: #000;
+    text-decoration: none
+}
+
+header a:visited {color: #000}
 
 .errorBox {
     background: #EF5858;
@@ -18,9 +35,6 @@ form.create-acct label {
 
 form.create-acct {
     background: #C6CACE;
-    border-radius: 5px;
-    margin-top: 20px;
-    max-width: 700px;
     padding: 20px;}
 
 table {
@@ -47,7 +61,6 @@ table.import tbody:nth-child(odd) {
 }
 
 table.import tbody td {
-/*    height: 2em;*/
     vertical-align: top;
 }
 
@@ -66,9 +79,7 @@ footer {
 
 .create_tr {
     background: #C6CACE;
-    border-radius: 5px;
-    margin-top: 20px;
-    max-width: 700px;
+    max-width: 100%;
     padding: 20px;
 }
 
@@ -77,7 +88,6 @@ footer {
 }
 
 .create_tr table {
-    margin-top: 5px; 
     width: 100%;
 }
 
@@ -101,7 +111,6 @@ footer {
 .edit-user {
     background: #C6CACE;
     border-radius: 5px;
-    margin-top: 20px;
     max-width: 700px;
     padding: 20px;
 }
@@ -109,18 +118,6 @@ footer {
 .edit-user label {
     display: inline-block;
     width: 16ex;
-}
-
-.logout {
-    position: fixed;
-    top: 0;
-    right: 0;
-}
-
-.batchinfo {
-    position: fixed;
-    top: 0;
-    left: 0;
 }
 
 div.lorem-ipsum {
@@ -133,5 +130,61 @@ div.lorem-ipsum > p::first-letter {
     font-family: cursive;
 }
 
+nav {background: #373F51;}
 
+.menubar {
+  text-align: left;
+  display: inline;
+  margin: 0;
+  padding: 15px 4px 17px 0;
+  list-style: none;
+}
 
+.menubar a {text-decoration: none}
+.menubar a {color: #DBDBDB}
+.menubar a:visited{color: #DBDBDB}
+
+.menubar li {
+  font: bold 12px/18px sans-serif;
+  display: inline-block;
+  margin-right: -4px;
+  position: relative;
+  padding: 15px 20px;
+  background: #373F51;
+  color: #DBDBDB;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.menubar > li:hover {
+  background: #46494C;
+  color: #fff;
+}
+
+.menubar li ul {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 0px;
+    padding: 0;
+    width: 150px;
+}
+
+.menubar li ul li {
+  background: #46494C;
+  display: block;
+  color: #fff;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.menubar li ul li a {
+  display: block;
+  padding: 15px 20px;
+}
+
+.menubar li ul li:hover {
+    background: #595959;
+    color: #fff;
+}
+.menubar li:hover ul {display: block}

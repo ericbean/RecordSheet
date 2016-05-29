@@ -23,20 +23,29 @@
 <header>
     <a href="{{url('index')}}"><h1>RecordSheet</h1></a>
 % if nav:
-% if 'batch' in ses and ses['batch'].id:
-    <span class="batchinfo">
-        <a href="{{url('batch_view', id=ses['batch'].id)}}">Batch ID: {{ses['batch'].id}}</a>
-    </span>
-% end
-    <span class="logout"><a href="{{url('logout')}}">logout</a></span>
-    <nav>
-        <span><a href="{{url('account_chart')}}">Accounts</a></span>
-        <span><a href="{{url('new_transaction')}}">New Transaction</a></span>
-        <span><a href="{{url('import_tr')}}">Import Data</a></span>
-        <span><a href="{{url('report_list')}}">Reports</a></span>
-    % if 'user' in ses:
-        <span><a href="{{url('user_self_edit')}}">Settings</a></span>
-    % end
+    <nav class="menu">
+        <ul class="menubar">
+            <li><a href="{{url('account_chart')}}">Accounts</a></li>
+            <li>Transactions&#9660;
+                <ul class="submenu">
+                    <li><a href="{{url('new_transaction')}}">New Transaction</a></li>
+                    <li><a href="{{url('import_tr')}}">Import Data</a></li>
+                    <li><a href="{{url('imported_tr')}}">Imported Data</a></li>
+                </ul>
+            </li>
+            <li><a href="{{url('report_list')}}">Reports</a></li>
+            <li>More&#9660;
+                <ul>
+                % if 'batch' in ses and ses['batch'].id:
+                    <li><a href="{{url('batch_view', id=ses['batch'].id)}}">Current Batch</a></li>
+                % end
+                %# if 'user_id' in ses:
+                    <li><a href="{{url('me')}}">Settings</a></li>
+                    <li><a href="{{url('logout')}}">Logout</a></li>
+                % end
+                </ul>
+            </li>
+        </ul>
     </nav>
 % end
 </header>
