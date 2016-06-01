@@ -48,6 +48,10 @@ table {
     border-collapse:collapse;
 }
 
+table.ledger thead {
+    background: #80AB82;
+    text-align: left;
+}
 table.ledger thead > tr:last-child > th {padding-left: 10px}
 table.ledger tbody > tr:nth-child(odd) {background: #C8D5B9}
 table.ledger tbody > tr:nth-child(odd) > td {padding-right: 10px}
