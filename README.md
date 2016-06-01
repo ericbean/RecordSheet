@@ -6,6 +6,8 @@ Double entry accounting application for small business.
 RecordSheet records financial transactions and generating reports simply and
 easily.
 
+<img src="https://cloud.githubusercontent.com/assets/5531051/15719508/da9c0ea2-27f5-11e6-9280-e67d3277209c.png" width="250px"/>
+
 ## Featues
 
 - Double entry bookkeeping
