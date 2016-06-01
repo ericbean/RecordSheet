@@ -19,6 +19,12 @@ header a {
 
 header a:visited {color: #000}
 
+main {
+    margin-left: auto;
+    margin-right: auto;
+    max-width:880px;
+}
+
 .errorBox {
     background: #EF5858;
     border-radius: 5px;
@@ -49,10 +55,19 @@ table.ledger tbody > tr:nth-child(even) {background: #CCDDBA}
 table.ledger tbody > tr:nth-child(even) > td {padding-left: 10px}
 table.ledger tbody td:last-child {text-align: right}
 
+table.journal {width:100%}
+table.journal thead {
+    background: #80AB82;
+    text-align: left;
+}
 
-table.journal tbody > tr:nth-child(odd) {background: #C8D5B9}
-table.journal tbody > tr:nth-child(even) {background: #CCDDBA}
-table.journal tbody td:last-child {text-align: right}
+table.journal tbody:nth-child(odd) {background: #C8D5B9}
+table.journal tbody:nth-child(even) {background: #CCDDBA}
+table.journal tbody > tr:nth-child(n+2) > td:first-child {
+    padding-left: 5em;
+    vertical-align: top;
+}
+table.journal td:last-child {text-align: right}
 
 table.import th {background: #80AB82}
 table.import thead tr:last-child th:last-child {text-align: right}
@@ -60,10 +75,7 @@ table.import tbody:nth-child(odd) {
     background: #C8D5B9;
 }
 
-table.import tbody td {
-    vertical-align: top;
-}
-
+table.import tbody td {vertical-align: top}
 table.import tbody:nth-child(even) {background: #CCDDBA}
 table.import tbody tr:last-child td:last-child {text-align: right}
 table.import tfoot {text-align: center}
@@ -111,7 +123,6 @@ footer {
 .edit-user {
     background: #C6CACE;
     border-radius: 5px;
-    max-width: 700px;
     padding: 20px;
 }
 
@@ -120,11 +131,7 @@ footer {
     width: 16ex;
 }
 
-div.lorem-ipsum {
-    max-width: 700px;
-}
-
-div.lorem-ipsum > p::first-letter {
+.lorem-ipsum > p::first-letter {
     color: crimson;
     font-size: 150%;
     font-family: cursive;
@@ -135,7 +142,6 @@ nav {background: #373F51;}
 .menubar {
   text-align: left;
   display: inline;
-  margin: 0;
   padding: 15px 4px 17px 0;
   list-style: none;
 }
@@ -165,7 +171,7 @@ nav {background: #373F51;}
     display: none;
     position: absolute;
     top: 48px;
-    left: 0px;
+    left: 0;
     padding: 0;
     width: 150px;
 }
