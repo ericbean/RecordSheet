@@ -33,7 +33,14 @@
                     <li><a href="{{url('imported_tr')}}">Imported Data</a></li>
                 </ul>
             </li>
-            <li><a href="{{url('report_list')}}">Reports</a></li>
+            <li>Reports&#9660;
+                <ul>
+                    <li><a href="{{url('trial_balance')}}">Trial Balance</a></li>
+                    <li><a href="{{url('pl_selector')}}">Profit & Loss</a></li>
+                    <li><a href="{{url('imbalanced')}}">Imbalanced Transactions</a></li>
+                    <li><a href="{{url('report_list')}}">More Reports</a></li>
+                </ul>
+            </li>
             <li>More&#9660;
                 <ul>
                 % if 'batch' in ses and ses['batch'].id:

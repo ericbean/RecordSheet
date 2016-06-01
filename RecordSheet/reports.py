@@ -26,6 +26,7 @@ from bottle import (Bottle, delete, get, post, put, redirect, request,
     response, route, view)
 
 from sqlalchemy import asc, desc, func
+from sqlalchemy.sql import label
 from RecordSheet import dbapi, dbmodel, util
 from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
                                     ImportedTransaction)
@@ -94,6 +95,19 @@ def pl_report():
             'period':period,
             'income':income.all(),
             'expenses':expenses.all()}
+###############################################################################
+
+@app.route('/reports/imbalanced', name='imbalanced')
+@view('journal')
+def imbalanced():
+    ses = dbapi.Session()
+    stmt = ses.query(func.sum(Posting.amount).label('j_sum'),
+                Posting.journal_id) \
+                .group_by(Posting.journal_id).subquery()
+
+    result = ses.query(Journal).join(stmt).filter(stmt.c.j_sum!=0).all()
+
+    return {'journals': result}
 
 ###############################################################################
 
