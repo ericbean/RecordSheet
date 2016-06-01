@@ -14,6 +14,7 @@ header {
 
 header a {
     color: #000;
+    font: sans-serif;
     text-decoration: none
 }
 
@@ -141,7 +142,7 @@ footer {
     font-family: cursive;
 }
 
-nav {background: #373F51;}
+.menu {background: #373F51;}
 
 .menubar {
   text-align: left;
@@ -150,12 +151,20 @@ nav {background: #373F51;}
   list-style: none;
 }
 
-.menubar a {text-decoration: none}
-.menubar a {color: #DBDBDB}
+.menubar a {
+  text-decoration: none;
+  color: #DBDBDB;
+  padding: 15px 20px;
+}
 .menubar a:visited{color: #DBDBDB}
 
+.menubar > li > a {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
 .menubar li {
-  font: bold 12px/18px sans-serif;
+  font: bold 12px sans-serif;
   display: inline-block;
   margin-right: -4px;
   position: relative;
@@ -174,7 +183,7 @@ nav {background: #373F51;}
 .menubar li ul {
     display: none;
     position: absolute;
-    top: 48px;
+    top: 44px;
     left: 0;
     padding: 0;
     width: 150px;
@@ -188,10 +197,7 @@ nav {background: #373F51;}
   transition: all 0.2s;
 }
 
-.menubar li ul li a {
-  display: block;
-  padding: 15px 20px;
-}
+.menubar li > ul > li > a {display: block}
 
 .menubar li ul li:hover {
     background: #595959;
