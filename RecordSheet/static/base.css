@@ -28,7 +28,6 @@ main {
 
 .errorBox {
     background: #EF5858;
-    border-radius: 5px;
     display: inline-block;
     padding: 3px;
     margin: 3px;
@@ -127,7 +126,6 @@ footer {
 
 .edit-user {
     background: #C6CACE;
-    border-radius: 5px;
     padding: 20px;
 }
 
