@@ -26,7 +26,7 @@ Base = declarative_base()
 from sqlalchemy import (Boolean, Column, DateTime, Float, Integer, LargeBinary,
                         Numeric, String, Text, Unicode)
 
-from sqlalchemy import create_engine, ForeignKey, func, event, asc, desc
+from sqlalchemy import create_engine, ForeignKey, func, event, asc, desc, Table
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker, validates
 from sqlalchemy.sql import func, select, column, literal_column
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
@@ -171,6 +171,7 @@ class User(Base):
     fail_count = Column(Integer, default=0)
     password = Column(LargeBinary, nullable=False)
     locked = Column(Boolean, default=True)
+    roles = relationship('Role', secondary='role_user')
 
 
     def json_obj(self):
@@ -182,6 +183,20 @@ class User(Base):
         dic = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         del dic['password']
         return dic
+
+###############################################################################
+
+role_user = Table('role_user', Base.metadata,
+    Column('role_id', Integer, ForeignKey('roles.id')),
+    Column('user_id', Integer, ForeignKey('users.id'))
+)
+
+class Role(Base, JsonMixin):
+    __tablename__ = 'roles'
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(64), unique=True)
+    description = Column(Unicode(255))
+
 
 ###############################################################################
 
