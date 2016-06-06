@@ -25,7 +25,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import Session
 
 from RecordSheet.dbapi import Base
-from RecordSheet import dbapi
+from RecordSheet import dbapi, dbmodel
 
 ###############################################################################
 
@@ -41,13 +41,17 @@ def setup_module():
     inner_tr = connection.begin_nested()
     ses = Session(connection)
 #    ses.begin_nested()
-    ses.add(dbapi.Account(name='TEST01', desc='test account 01'))
-    ses.add(dbapi.Account(name='TEST02', desc='test account 02'))
-    user = dbapi.User(username='testuser', name='Test T. User',
+    ses.add(dbmodel.Account(name='TEST01', desc='test account 01'))
+    ses.add(dbmodel.Account(name='TEST02', desc='test account 02'))
+    user = dbmodel.User(username='testuser', name='Test T. User',
                        password=dbapi.new_pw_hash('passtestword'))
     ses.add(user)
 
-    ses.add(dbapi.Batch(user=user))
+    batch = dbmodel.Batch(user=user)
+    ses.add(batch)
+    jrnl = dbmodel.Journal(memo='test', batch=batch,
+                datetime='2016-06-05 14:09:00-05')
+    ses.add(jrnl)
     ses.commit()
     # mock a sessionmaker so all querys are in this transaction
     dbapi._session = lambda: ses
