@@ -21,4 +21,5 @@
 import os
 
 # no need to be fancy when just this will do
-OPTIONS = {'dbconnectstr':'postgresql:///recordsheet'}
+OPTIONS = {'dbconnectstr':'postgresql:///recordsheet',
+           'debug': False}
