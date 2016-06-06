@@ -56,7 +56,7 @@ function getAccounts(callback) {
 
     var oReq = new XMLHttpRequest();
     pending = oReq;
-    oReq.open("GET", baseUrl+'/json/accounts');
+    oReq.open("GET", baseUrl+'/json/accounts?sort=name.asc');
     oReq.addEventListener("load", self.load_cb);
     oReq.addEventListener("error", self.error_cb);
     oReq.send();
@@ -170,8 +170,8 @@ function createAcctViewModel(params) {
             var xhr = event.currentTarget;
             var data = JSON.parse(xhr.response);
             if (xhr.status === 200) {
-                _accounts.push(data.acct);
-                self.callback(data.acct);
+                _accounts.push(data);
+                self.callback(data);
                 self.name("");
                 self.desc("");
             } else {
@@ -182,7 +182,7 @@ function createAcctViewModel(params) {
             self._errorMsg("xhr error");
         };
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", baseUrl+'/json/accounts/new');
+        oReq.open("PUT", baseUrl+'/json/accounts');
         oReq.addEventListener("load", self.load_cb);
         oReq.addEventListener("error", self.error_cb);
         oReq.setRequestHeader("Accept", 'application/json');

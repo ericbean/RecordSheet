@@ -28,7 +28,7 @@ import bottle
 from bottle import (abort, delete, get, hook, post, put, redirect, request,
     response, route, view)
 
-from RecordSheet import dbapi, dbmodel, mport, reports, util
+from RecordSheet import dbapi, dbmodel, jsonapp, mport, reports, util
 from RecordSheet.config import OPTIONS
 from RecordSheet.ofx import ofx
 
@@ -91,54 +91,12 @@ def account_view(id):
 
     return {"account": acct}
 
-
-@rsapp.route('/json/accounts', name='accounts_json')
-def accounts_json_view():
-    return {'accounts': dbapi.get_accounts()}
-
-
-@rsapp.post('/json/accounts/new', name='new_account_json')
-def json_accounts_new():
-    try:
-        name = request.json['name']
-        desc = request.json['desc']
-        acct = dbapi.new_account(name, desc)
-        return {'acct':acct}
-
-    except KeyError:
-        return json_error(400, 'Missing name or desc')
-
-    except dbapi.DBException as exc:
-        return json_error(400, exc)
-
-    except Exception as exc:
-        return json_error(500, exc)
-
 ###############################################################################
 
 @rsapp.route('/transaction/new', name='new_transaction')
 @view('new_transaction')
 def new_transaction():
     return {'accounts': dbapi.get_accounts()}
-
-
-@rsapp.post('/json/journal/new', name='new_transaction_post')
-def new_transaction_json():
-    try:
-        ws = www_session()
-        batch = ws.setdefault('batch', dbapi.new_batch(ws['user_id']))
-        # allow sending datetime as sending empty string or not at all
-        data = request.json
-        data['datetime'] = data.get('datetime', None) or None
-        journal = dbapi.new_transaction(batch, **data)
-
-        return {'journal_id':journal.id}
-
-    except dbapi.DBException as exc:
-        return json_error(400, exc)
-
-    except Exception as exc:
-        return json_error(500, exc)
 
 ###############################################################################
 
@@ -209,16 +167,6 @@ def incomplete_trs():
     #TODO load all the data from xhr
     return {"posts": dbapi.get_imported_transactions(limit=pagesize,offset=offset)}
 
-
-@rsapp.route('/json/imported_transactions', name='imported_tr_json')
-def import_tr_json():
-    pagesize = 10
-    page = int(request.query.get('page', 0))
-    offset = page * pagesize
-    imported = dbapi.get_imported_transactions(limit=pagesize, offset=offset)
-
-    return {"imported": imported}
-
 ###############################################################################
 
 @rsapp.route('/users/<username>', name='user_view')
@@ -228,11 +176,6 @@ def user_view(username):
         abort(404, "User \"{}\" Doesn't Exist".format(username))
 
     return {'user': user}
-
-
-@rsapp.post('json/users/new')
-def json_user_new():
-    return {}
 
 ###############################################################################
 
@@ -346,6 +289,7 @@ def app(**kwargs):
 
     # merge instead of mount
     rsapp.merge(reports.app)
+    rsapp.mount('/json/', jsonapp.app)
     # setup path for views
     bottle.TEMPLATE_PATH.insert(0, VIEWS_ROOT)
 

@@ -32,5 +32,5 @@ setup(
                       'psycopg2==2.6.1',
                       'SQLAlchemy==1.0.12'],
     test_suite='nose.collector',
-    tests_require=['nose']
+    tests_require=['nose', 'webtest']
 )

@@ -96,7 +96,7 @@ var ViewModel = function() {
         this.load_cb = function(event) {
             var xhr = event.currentTarget;
             if (xhr.status === 200) {
-                var arr = JSON.parse(xhr.response).imported
+                var arr = JSON.parse(xhr.response).imported_transactions
                 //resultArray.push(...arr);
                 self.pending.splice(0,self.pageLength, ...arr);
                 self.page(page);
@@ -106,8 +106,10 @@ var ViewModel = function() {
             console.log("xhr error");
             console.log(event);
         };
+        var limit = self.pageLength;
+        var offset = self.pageLength * page;
         var oReq = new XMLHttpRequest();
-        var url = baseUrl+'/json/imported_transactions?page=' + page
+        var url = baseUrl+'/json/imported_transactions?limit='+limit+'&offset='+offset
         oReq.open("GET", url);
         oReq.addEventListener("load", self.load_cb);
         oReq.addEventListener("error", self.error_cb);

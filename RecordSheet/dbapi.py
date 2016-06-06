@@ -223,7 +223,7 @@ def new_transaction(batch, posts=None, datetime=None, memo=None):
 
             else:
                 post = Posting(account_id=p['account_id'], amount=p['amount'],
-                               memo=(p['memo'] or memo))
+                               memo=p.get('memo', memo))
 
                 _posts.append(post)
 
