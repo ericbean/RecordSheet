@@ -64,7 +64,7 @@ class Posting(Base, JsonMixin):
 ###############################################################################
 
 class ImportedTransaction(Base, JsonMixin):
-    __tablename__ = 'imported_transaction'
+    __tablename__ = 'imported_transactions'
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer, ForeignKey('accounts.id'))
     account_hint = Column(Unicode(length=256), default="")
