@@ -240,7 +240,7 @@ function createTrViewModel(params) {
             console.log(event);
         };
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", baseUrl+'/json/journal/new');
+        oReq.open("PUT", baseUrl+'/json/journal');
         oReq.addEventListener("load", self.load_cb);
         oReq.addEventListener("error", self.error_cb);
         oReq.setRequestHeader("Accept", 'application/json');
