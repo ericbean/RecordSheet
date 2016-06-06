@@ -29,48 +29,7 @@ from RecordSheet.dbapi import Base
 from RecordSheet import jsonapp, dbapi, dbmodel
 app = TestApp(jsonapp.app, extra_environ={'beaker.session':{'user_id':1}})
 
-###############################################################################
-
-def setup_module():
-    global transaction, connection, engine
-
-    engine = create_engine('postgresql:///recordsheet_test')
-    connection = engine.connect()
-    transaction = connection.begin()
-    Base.metadata.create_all(connection)
-
-    #insert some data
-    inner_tr = connection.begin_nested()
-    ses = Session(connection)
-#    ses.begin_nested()
-    ses.add(dbapi.Account(name='TEST01', desc='test account 01'))
-    ses.add(dbapi.Account(name='TEST02', desc='test account 02'))
-    ses.add(dbapi.User(username='testuser', name='Test T. User',
-                       password=dbapi.new_pw_hash('passtestword')))
-
-    ses.commit()
-    # mock a sessionmaker so all querys are in this transaction
-    dbapi._session = lambda: ses
-    ses.begin_nested()
-
-    @event.listens_for(ses, "after_transaction_end")
-    def restart_savepoint(session, transaction):
-        if transaction.nested and not transaction._parent.nested:
-            ses.begin_nested()
-
-
-def teardown_module():
-    transaction.rollback()
-    connection.close()
-    engine.dispose()
-
-###############################################################################
-
-#def setupdb(func):
-#    transaction = connection.begin_nested()
-
-#def teardowndb(func):
-#    transaction.rollback()
+from test.dbhelper import setup_module, teardown_module
 
 ###############################################################################
 
