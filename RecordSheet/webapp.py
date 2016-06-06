@@ -53,20 +53,6 @@ def www_session():
 
     return session
 
-def json_error(status=500, error_msg=None):
-    """Helper for returning json responses indicating errors. Sets the http
-    status and content-type headers of the response (side effects).
-    """
-    if not error_msg:
-        error_msg = 'Internal Server Error'
-    # set the http status code and content type
-    response.status = status
-    response.content_type = 'application/json'
-    # a str will bypass the autojson plugin
-    if bottle.DEBUG:
-        traceback.print_exc()
-    return util.jsonDumps({'errorMsg': str(error_msg)})
-
 ###############################################################################
 
 @rsapp.route('/', name='index')
