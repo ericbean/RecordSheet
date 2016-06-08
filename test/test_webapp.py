@@ -25,8 +25,9 @@ from webtest import TestApp
 
 from RecordSheet import dbapi, dbmodel, webapp
 full_app = webapp.app()
+CSRF_TOKEN = '12345'
 app = TestApp(webapp.rsapp, extra_environ={'beaker.session':{'user_id':1,
-                                                     'csrf-token':'12345',
+                                                     'csrf-token':CSRF_TOKEN,
                                                      'authenticated':True}})
 
 from test.dbhelper import setup_module, teardown_module
@@ -136,4 +137,71 @@ def test_login():
     assert response.status_int == 200
     assert response.content_type == 'text/html'
 
+
+def test_login_post():
+    postdata = {'username': 'testuser',
+                'password':'passtestword',
+                'csrf-token':CSRF_TOKEN}
+
+    response = app.post('/login', postdata)
+    assert response.status_int == 302
+    assert response.content_type == 'text/html'
+
+
+def test_login_bad_pw():
+    postdata = {'username': 'testuser',
+                'password':'notpassword',
+                'csrf-token':CSRF_TOKEN}
+
+    response = app.post('/login', postdata)
+    assert response.status_int == 200
+    assert response.content_type == 'text/html'
+
+
+def test_login_no_pw():
+    postdata = {'username': 'testuser', 'csrf-token':CSRF_TOKEN}
+    response = app.post('/login', postdata, status='*')
+    assert response.status_int == 400
+    assert response.content_type == 'text/html'
+
+
+def test_login_bad_user():
+    postdata = {'username': 'nxuser',
+                'password':'notpassword',
+                'csrf-token':CSRF_TOKEN}
+
+    response = app.post('/login', postdata)
+    assert response.status_int == 200
+    assert response.content_type == 'text/html'
+
+
+def test_login_no_user():
+    postdata = {'password':'notpassword', 'csrf-token':CSRF_TOKEN}
+    response = app.post('/login', postdata, status='*')
+    assert response.status_int == 400
+    assert response.content_type == 'text/html'
+
+
+def test_login_locked_user():
+    postdata = {'username': 'lockeduser',
+                'password':'passtestword',
+                'csrf-token':CSRF_TOKEN}
+
+    response = app.post('/login', postdata)
+    assert response.status_int == 200
+    assert response.content_type == 'text/html'
+
+
+def test_logout():
+    response = app.get('/logout')
+    assert response.status_int == 200
+    assert response.content_type == 'text/html'
+
+###############################################################################
+
+def test_static():
+    response = app.get('/static/print.css')
+    print('content=', response.content_type)
+    assert response.status_int == 200
+    assert response.content_type == 'text/css'
 

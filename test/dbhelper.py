@@ -44,8 +44,13 @@ def setup_module():
     ses.add(dbmodel.Account(name='TEST01', desc='test account 01'))
     ses.add(dbmodel.Account(name='TEST02', desc='test account 02'))
     user = dbmodel.User(username='testuser', name='Test T. User',
-                       password=dbapi.new_pw_hash('passtestword'))
+                       password=dbapi.new_pw_hash('passtestword'),
+                       locked=False)
     ses.add(user)
+    lockeduser = dbmodel.User(username='lockeduser', name='Test T. User',
+                       password=dbapi.new_pw_hash('passtestword'),
+                       locked=True)
+    ses.add(lockeduser)
 
     batch = dbmodel.Batch(user=user)
     ses.add(batch)
