@@ -84,3 +84,8 @@ def csrf_token():
 
 ###############################################################################
 
+def www_session():
+    """Utility function to get the web session."""
+    return bottle.request.environ.get('beaker.session')
+
+###############################################################################

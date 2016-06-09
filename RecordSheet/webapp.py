@@ -24,6 +24,7 @@ import bottle
 from bottle import abort, redirect, request, response, route, view
 
 from RecordSheet import dbapi, dbmodel, jsonapp, mport, plugins, reports, util
+from RecordSheet.util import www_session
 from RecordSheet.config import OPTIONS
 from RecordSheet.ofx import ofx
 
@@ -39,14 +40,6 @@ VIEWS_ROOT = os.path.join(APP_DIR, 'views')
 rsapp = bottle.Bottle(autojson=False)
 # re-setup autojson with util.jsonDumps
 rsapp.install(bottle.JSONPlugin(json_dumps=util.jsonDumps))
-
-###############################################################################
-
-def www_session():
-    """Utility function to get the web session."""
-    session = request.environ.get('beaker.session')
-
-    return session
 
 ###############################################################################
 
@@ -293,4 +286,3 @@ def main():
     bottle.run(app=app(), server='gevent', debug=True)
 
 ###############################################################################
-
