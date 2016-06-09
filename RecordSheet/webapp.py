@@ -18,17 +18,12 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import html
-import json
 import os
-import traceback
 
 import bottle
-# at some point I'll just import *
-from bottle import (abort, delete, get, hook, post, put, redirect, request,
-    response, route, view)
+from bottle import abort, redirect, request, response, route, view
 
-from RecordSheet import dbapi, dbmodel, jsonapp, mport, reports, util
+from RecordSheet import dbapi, dbmodel, jsonapp, mport, plugins, reports, util
 from RecordSheet.config import OPTIONS
 from RecordSheet.ofx import ofx
 
@@ -209,14 +204,10 @@ def admin_users():
 @rsapp.route('/login', name='login')
 @view('login')
 def login():
-    # ensure csrf-token is set
-    ws = www_session()
-    if 'csrf-token' not in ws:
-        ws['csrf-token'] = util.csrf_token()
     return {}
 
 
-@rsapp.post('/login', name='login_post')
+@rsapp.post('/login', name='login_post', roles=False)
 @view('login')
 def login_post():
     ws = www_session()
@@ -252,21 +243,15 @@ def logout():
 
 ###############################################################################
 
-@rsapp.route('/static/<filename:path>', name='static')
+@rsapp.route('/static/<filename:path>', name='static', roles=False)
 def send_static(filename):
     return bottle.static_file(filename, root=STATIC_ROOT)
 
 ###############################################################################
 
-@rsapp.hook('before_request')
-def csrf_check():
-    if request.method != 'GET':
-        ws = www_session()
-        token = (request.POST.get('csrf-token') or
-                        request.headers.get('X-csrf-token'))
-
-        if token != ws['csrf-token']:
-            abort(400, "CSRF Token Is Missing")
+# install plugins
+rsapp.install(plugins.CsrfPlugin())
+rsapp.install(plugins.AuthPlugin(www_session))
 
 ###############################################################################
 
@@ -287,15 +272,13 @@ def app(**kwargs):
     bottle.BaseTemplate.defaults['jsonDumps'] = util.jsonDumps
     bottle.BaseTemplate.defaults['www_session'] = www_session
 
-    from RecordSheet.auth import auth_middleware
     from beaker.middleware import SessionMiddleware
-    authapp = auth_middleware(rsapp)
     session_opts = {'session.type': 'memory',
                     'session.auto': True,
                     'session.cookie_expires': True,
                     'secret': os.urandom(64)}
 
-    sessionapp = SessionMiddleware(authapp, session_opts)
+    sessionapp = SessionMiddleware(rsapp, session_opts)
     dbapi.init()
     return sessionapp
 
