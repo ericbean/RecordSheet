@@ -151,6 +151,7 @@ def incomplete_trs():
 ###############################################################################
 
 @rsapp.route('/users/<username>', name='user_view')
+@view('user')
 def user_view(username):
     user = dbapi.get_user_by_username(username)
     if user is None:

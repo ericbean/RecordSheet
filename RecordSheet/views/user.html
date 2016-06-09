@@ -1,0 +1,20 @@
+% rebase('base.html', title='RecordSheet')
+<section>
+  <table>
+    <thead>
+      <tr>
+        <th colspan=2>{{user.username}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <td>{{user.name}}</td>
+      </tr>
+      <tr>
+        <th>Last Login</th>
+        <td>{{user.last_login}}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

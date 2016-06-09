@@ -30,6 +30,7 @@ import os
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 
 from RecordSheet.config import OPTIONS
 from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
@@ -306,7 +307,11 @@ def get_user(id):
 def get_user_by_username(username):
     """Get user by `username`."""
     ses = _session()
-    return ses.query(User).filter(User.username==username).one()
+    try:
+        return ses.query(User).filter(User.username==username).one()
+    except NoResultFound:
+        ses.rollback()
+        return None
 
 
 def login(username, password):
@@ -315,10 +320,8 @@ def login(username, password):
     :returns: (user or None, success)
     """
     ses = _session()
-    try:
-        user = get_user_by_username(username)
-    except SQLAlchemyError:
-        ses.rollback()
+    user = get_user_by_username(username)
+    if user is None:
         return None, 'USERPASS'
 
     user.last_attempt = datetime.datetime.utcnow()
@@ -410,4 +413,3 @@ def compare_pw(plaintext, hashed):
     return dk == hashed[SALT_LEN:]
 
 ###############################################################################
-
