@@ -40,6 +40,7 @@ from RecordSheet.config import OPTIONS
 app = bottle.Bottle(autojson=False)
 app.install(plugins.CsrfPlugin())
 app.install(plugins.AuthPlugin())
+app.install(plugins.JSONPlugin())
 
 sorte = {'accounts':Account,
          'batches':Batch,
@@ -50,33 +51,7 @@ sorte = {'accounts':Account,
 
 ###############################################################################
 
-def jsonout(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        status = 500
-        try:
-            result = func(*args, **kwargs)
-            status = 200
-        except HTTPError as exc:
-            print(exc)
-            status = exc.status
-            result = {'errorMsg':exc.args[1]}
-        except Exception as exc:
-            if OPTIONS['debug']:
-                traceback.print_exc()
-            result = {'errorMsg':'Internal Server Error'}
-
-        response.status = status
-        response.content_type = 'application/json'
-
-        return util.jsonDumps(result)
-
-    return wrapper
-
-###############################################################################
-
 @app.route('/<kind>')
-@jsonout
 def generic_collection(kind):
     """Generic GET handler.
 
@@ -123,7 +98,6 @@ def generic_collection(kind):
 
 
 @app.route('/<kind>/<id:int>')
-@jsonout
 def generic_item(kind, id):
     ses = dbapi.Session()
     cls = sorte.get(kind)
@@ -139,7 +113,6 @@ def generic_item(kind, id):
 ###############################################################################
 
 @app.put('/<kind>')
-@jsonout
 def generic_collection_put(kind):
     try:
         ses = dbapi.Session()
@@ -162,7 +135,6 @@ def generic_collection_put(kind):
 
 
 @app.post('/<kind>/<id:int>')
-@jsonout
 def generic_item_post(kind, id):
     try:
         ses = dbapi.Session()
@@ -188,7 +160,6 @@ def generic_item_post(kind, id):
 ###############################################################################
 
 @app.put('/journal')
-@jsonout
 def journal_put():
     try:
         ws = request.environ.get('beaker.session')
@@ -206,7 +177,6 @@ def journal_put():
 ###############################################################################
 
 @app.get('/imported_transactions')
-@jsonout
 def imported_transactions_get():
     ses = dbapi.Session()
     qry = ses.query(dbapi.ImportedTransaction) \

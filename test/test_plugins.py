@@ -48,6 +48,21 @@ def mock_post():
 def mock_post():
     return INDEX_TPL
 
+
+@mockapp.route('/json')
+def mock_json():
+    return {'msg':'Hello, World!'}
+
+
+@mockapp.route('/json/httperror')
+def mock_json():
+    bottle.abort(400, 'Not Today')
+
+
+@mockapp.route('/json/servererror')
+def mock_json():
+    raise Exception('oops!')
+
 ###############################################################################
 
 class testAuthPlugin:
@@ -136,16 +151,33 @@ class testCSRF:
 
 ###############################################################################
 
+class testJSON:
+    @classmethod
+    def setUpClass(cls):
+        cls.plugin = plugins.JSONPlugin()
+        mockapp.install(cls.plugin)
 
 
+    @classmethod
+    def tearDownClass(cls):
+        mockapp.uninstall(cls.plugin)
 
 
+    def test_json_success(self):
+        response = app.get('/json', status='*')
+        assert response.status_int == 200
+        assert response.content_type == 'application/json'
 
 
+    def test_json_httperror(self):
+        response = app.get('/json/httperror', status='*')
+        assert response.status_int == 400
+        assert response.content_type == 'application/json'
 
 
+    def test_json_server_error(self):
+        response = app.get('/json/servererror', status='*')
+        assert response.status_int == 500
+        assert response.content_type == 'application/json'
 
-
-
-
-
+###############################################################################

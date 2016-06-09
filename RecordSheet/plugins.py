@@ -19,10 +19,12 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
+import traceback
 
-from bottle import abort, response, request, template
+from bottle import abort, response, request, template, HTTPError
 
 from RecordSheet import util
+from RecordSheet.config import OPTIONS
 
 ###############################################################################
 
@@ -81,6 +83,40 @@ class CsrfPlugin:
                     abort(400, "Invalid CSRF token")
 
             return callback(*args, **kwargs)
+
+        return wrapper
+
+###############################################################################
+
+class JSONPlugin:
+    api = 2
+
+    def __init__(self):
+        pass
+
+
+    def apply(self, callback, route):
+        @functools.wraps(callback)
+        def wrapper(*args, **kwargs):
+            status = 500
+            try:
+                result = callback(*args, **kwargs)
+                status = 200
+
+            except HTTPError as exc:
+                print(exc)
+                status = exc.status
+                result = {'errorMsg':exc.args[1]}
+
+            except Exception as exc:
+                if OPTIONS['debug']:
+                    traceback.print_exc()
+                result = {'errorMsg':'Internal Server Error'}
+
+            response.status = status
+            response.content_type = 'application/json'
+
+            return util.jsonDumps(result)
 
         return wrapper
 

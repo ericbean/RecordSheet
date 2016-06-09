@@ -44,15 +44,6 @@ def teardown_module():
 
 ###############################################################################
 
-def test_jsonout():
-    @jsonapp.jsonout
-    def tester():
-        raise Exception('Testing 123')
-    result = tester()
-    assert result == '{"errorMsg":"Internal Server Error"}'
-
-###############################################################################
-
 def test_generic_collection():
     url = '/accounts?sort=name.asc&sort=id.desc&limit=5&offset=1'
     response = app.get(url)
