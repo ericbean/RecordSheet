@@ -26,10 +26,21 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import Session
 
 from RecordSheet.dbapi import Base
-from RecordSheet import jsonapp, dbapi, dbmodel
+from RecordSheet import jsonapp, dbapi, dbmodel, plugins
 app = TestApp(jsonapp.app, extra_environ={'beaker.session':{'user_id':1}})
 
-from test.dbhelper import setup_module, teardown_module
+from test import dbhelper
+
+###############################################################################
+
+def setup_module():
+    jsonapp.app.uninstall(plugins.CsrfPlugin)
+    jsonapp.app.uninstall(plugins.AuthPlugin)
+    dbhelper.setup_module()
+
+
+def teardown_module():
+    dbhelper.teardown_module()
 
 ###############################################################################
 
@@ -142,4 +153,3 @@ def test_imported_transactions_get():
     assert 'imported_transactions' in response.json
 
 ###############################################################################
-

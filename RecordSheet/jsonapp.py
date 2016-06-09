@@ -31,12 +31,15 @@ from bottle import abort, Bottle, HTTPError, redirect, request, response
 from sqlalchemy import asc, desc, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import label
-from RecordSheet import dbapi, dbmodel, util
+from RecordSheet import dbapi, dbmodel, plugins, util
 from RecordSheet.dbmodel import (Account, Batch, Journal, Posting,
                                     ImportedTransaction, User, Role)
 from RecordSheet.config import OPTIONS
 
-app = bottle.Bottle()
+
+app = bottle.Bottle(autojson=False)
+app.install(plugins.CsrfPlugin())
+app.install(plugins.AuthPlugin())
 
 sorte = {'accounts':Account,
          'batches':Batch,
@@ -221,4 +224,3 @@ def imported_transactions_get():
     return {'imported_transactions':qry.all()}
 
 ###############################################################################
-

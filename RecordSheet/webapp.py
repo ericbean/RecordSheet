@@ -39,7 +39,7 @@ VIEWS_ROOT = os.path.join(APP_DIR, 'views')
 
 rsapp = bottle.Bottle(autojson=False)
 # re-setup autojson with util.jsonDumps
-rsapp.install(bottle.JSONPlugin(json_dumps=util.jsonDumps))
+# rsapp.install(bottle.JSONPlugin(json_dumps=util.jsonDumps))
 
 ###############################################################################
 
