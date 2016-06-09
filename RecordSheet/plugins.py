@@ -29,7 +29,7 @@ from RecordSheet import util
 class AuthPlugin:
     api = 2
 
-    def __init__(self, get_session):
+    def __init__(self, get_session=util.www_session):
         self.get_session = get_session
         self.default_roles = {'authenticated'}
         self.login_template = 'login'
@@ -62,14 +62,14 @@ class AuthPlugin:
 class CsrfPlugin:
     api = 2
 
-    def __init__(self, session_key='beaker.session'):
-        self.session_key = session_key
+    def __init__(self, get_session=util.www_session):
+        self.get_session = get_session
 
 
     def apply(self, callback, route):
         @functools.wraps(callback)
         def wrapper(*args, **kwargs):
-            wses = request.environ.get(self.session_key)
+            wses = self.get_session()
             if 'csrf-token' not in wses:
                 wses['csrf-token'] = util.csrf_token()
 
@@ -85,4 +85,3 @@ class CsrfPlugin:
         return wrapper
 
 ###############################################################################
-

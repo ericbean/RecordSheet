@@ -205,4 +205,3 @@ def posting_insert_listener(mapper, connection, target):
     target.seq = connection.scalar("SELECT (COALESCE(MAX(seq), 0) + 1) "
                                    "as max_seq FROM posts WHERE "
                                    "account_id={}".format(target.account_id))
-
