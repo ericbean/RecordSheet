@@ -133,7 +133,7 @@ def import_tr_post():
 ###############################################################################
 
 @rsapp.route('/imported_transactions', name='imported_tr')
-@view('incomplete')
+@view('imported_transactions')
 def incomplete_trs():
     pagesize = 10
     page = int(request.query.get('page', 0))
