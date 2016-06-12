@@ -52,7 +52,6 @@ class Posting(Base, JsonMixin):
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     journal_id = Column(Integer, ForeignKey('journal.id'), nullable=False)
     amount = Column(Numeric, default=0)
-    seq = Column(Integer, default=0)
     fitid = Column(Unicode(length=255))
     ref = Column(Unicode(length=32))
     memo = Column(Unicode(length=1024))
@@ -199,9 +198,3 @@ class Role(Base, JsonMixin):
 
 
 ###############################################################################
-
-@event.listens_for(Posting, 'before_insert')
-def posting_insert_listener(mapper, connection, target):
-    target.seq = connection.scalar("SELECT (COALESCE(MAX(seq), 0) + 1) "
-                                   "as max_seq FROM posts WHERE "
-                                   "account_id={}".format(target.account_id))

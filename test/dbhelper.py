@@ -57,6 +57,10 @@ def setup_module():
     jrnl = dbmodel.Journal(memo='test', batch=batch,
                 datetime='2016-06-05 14:09:00-05')
     ses.add(jrnl)
+    ses.add(dbmodel.Posting(memo="test", amount=100, account_id=1,
+                        journal=jrnl))
+    ses.add(dbmodel.Posting(memo="test", amount=-100, account_id=2,
+                        journal=jrnl))
     ses.commit()
     # mock a sessionmaker so all querys are in this transaction
     dbapi._session = lambda: ses
