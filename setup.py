@@ -24,7 +24,7 @@ setup(
             " (GPLv3+)"),
         "Programming Language :: Python :: 3.4"
     ],
-    entry_points={'console_scripts': ['recordsheet = RecordSheet.webapp:main']},
+    entry_points={'console_scripts': ['recordsheet=RecordSheet.cmdline:main']},
     install_requires=['Beaker==1.8.0',
                       'bottle==0.12.9',
                       'gevent==1.1.1',

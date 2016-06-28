@@ -277,12 +277,3 @@ def app(**kwargs):
     return sessionapp
 
 ###############################################################################
-
-def main():
-    # import gevent and monkey patch here so only the gevent server is
-    # affected.
-    from gevent import monkey
-    monkey.patch_all()
-    bottle.run(app=app(), server='gevent', debug=True)
-
-###############################################################################
